@@ -1,9 +1,12 @@
-import { recordRun, getRunsCount } from "./health.repository.js";
+import { getRunsCount, initHealthRepository, recordRun } from "./health.repository.js";
 import type { HealthStatus } from "./health.types.js";
 
 export type { HealthStatus };
 
-recordRun();
+export function startHealthTracking(): void {
+  initHealthRepository();
+  recordRun();
+}
 
 export function getHealthStatus(): HealthStatus {
   const runsCount = getRunsCount();

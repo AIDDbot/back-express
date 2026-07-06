@@ -1,8 +1,10 @@
 import { test } from "node:test";
 import assert from "node:assert";
-import { getHealthStatus } from "./health.service.js";
+import { getHealthStatus, startHealthTracking } from "./health.service.js";
 
 void test("health service", async (t) => {
+  startHealthTracking();
+
   await t.test("getHealthStatus returns health status object", () => {
     const result = getHealthStatus();
 

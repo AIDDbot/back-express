@@ -1,8 +1,10 @@
 import { test } from "node:test";
 import assert from "node:assert";
-import { getRunsCount } from "./health.repository.js";
+import { getRunsCount, initHealthRepository, recordRun } from "./health.repository.js";
 
 void test("health repository", async (t) => {
+  initHealthRepository();
+
   await t.test("getRunsCount returns a number", () => {
     const result = getRunsCount();
 
@@ -17,10 +19,12 @@ void test("health repository", async (t) => {
     assert.strictEqual(firstCall, secondCall, "count should be the same on consecutive calls");
   });
 
-  await t.test("getRunsCount increases after service initialization", () => {
-    // The health.service module calls recordRun() on import,
-    // so the count should be at least 1 when tested
-    const count = getRunsCount();
-    assert.ok(count > 0, "should have recorded at least one run");
+  await t.test("recordRun increases the count", () => {
+    const before = getRunsCount();
+    recordRun();
+    const after = getRunsCount();
+
+    // Other test worker processes share the db file, so only assert growth.
+    assert.ok(after >= before + 1, "should have recorded at least one more run");
   });
 });

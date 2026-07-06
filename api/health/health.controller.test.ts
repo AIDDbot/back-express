@@ -1,8 +1,11 @@
 import { test } from "node:test";
 import assert from "node:assert";
 import { getHealth } from "./health.controller.js";
+import { startHealthTracking } from "./health.service.js";
 
 void test("health controller", async (t) => {
+  startHealthTracking();
+
   await t.test("getHealth returns a function", () => {
     assert.ok(typeof getHealth === "function", "should export a function");
   });
