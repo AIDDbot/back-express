@@ -1,0 +1,30 @@
+{
+  "name": "back-express",
+  "version": "1.0.0",
+  "description": "Back-end Express archetype",
+  "type": "module",
+  "scripts": {
+    "dev": "nub watch back/server.ts",
+    "start": "nub back/server.ts",
+    "test": "nub --test back/**/*.test.ts",
+    "test:watch": "nub --test --watch back/**/*.test.ts",
+    "format": "oxfmt . ",
+    "lint": "oxlint --fix-dangerously --format=agent .",
+    "typecheck": "oxlint --type-aware --type-check --format=agent ."
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.1.0",
+    "lefthook": "^2.1.9",
+    "oxfmt": "^0.57.0",
+    "oxlint": "^1.72.0",
+    "oxlint-tsgolint": "^0.24.0",
+    "typescript": "^7.0.1-rc"
+  },
+  "engines": {
+    "node": ">=26.0.0"
+  }
+}
