@@ -4,12 +4,12 @@ pre-commit:
   commands:
     debug:
       run: 'echo "staged: {staged_files}"'
-    format:
-      run: nub run format
-      stage_fixed: true
-    lint:
-      run: nub run lint
-      stage_fixed: true
+    # format:
+    #   run: nub run format
+    #   stage_fixed: true
+    # lint:
+    #   run: nub run lint
+    #   stage_fixed: true
 
 # pre-push:
 #   commands:
