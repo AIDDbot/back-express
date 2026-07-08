@@ -1,31 +1,5 @@
-assert_lefthook_installed: true
-colors: false
-no_tty: true
-output:
-  - meta           # Print lefthook version
-  - summary        # Print summary block (successful and failed steps)
-  - empty_summary  # Print summary heading when there are no steps to run
-  - success        # Print successful steps
-  - failure        # Print failed steps printing
-  - execution      # Print any execution logs
-  - execution_out  # Print execution output
-  - execution_info # Print `EXECUTE > ...` logging
-  - skips          # Print "skip" (i.e. no files matched)
-
 pre-commit:
   commands:
-    debug:
-      run: 'echo "staged: {staged_files}"'
-    # format:
-    #   run: nub run format
-    #   stage_fixed: true
-    # lint:
-    #   run: nub run lint
-    #   stage_fixed: true
-
-# pre-push:
-#   commands:
-#     typecheck:
-#       run: oxlint --type-aware --type-check .
-#     test:
-#       run: nub run test
+    lint:
+      run: nub run lint
+      stage_fixed: true
