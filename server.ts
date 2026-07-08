@@ -1,9 +1,9 @@
-import cors from "cors";
-import express from "express";
 import { apiRouter } from "./api/api.js";
-import { startHealthTracking } from "./api/health/health.service.js";
-import { port } from "./shared/config.js";
+import cors from "cors";
 import { errorHandler } from "./shared/errors.js";
+import express from "express";
+import { port } from "./shared/config.js";
+import { startHealthTracking } from "./api/health/health.service.js";
 
 const app = express();
 app.use(cors());
@@ -14,4 +14,6 @@ app.use("/api", apiRouter);
 app.use(errorHandler);
 
 startHealthTracking();
-app.listen(port, () => console.log(`Check server health at http://localhost:${port}/api/health`));
+app.listen(port, () =>
+  process.stdout.write(`Check server health at http://localhost:${port}/api/health\n`),
+);

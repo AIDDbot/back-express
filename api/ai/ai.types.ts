@@ -1,7 +1,7 @@
-export type AiRequest = {
+export interface AiRequest {
   prompt: string;
-};
+}
 
-export type AiReply = {
+export interface AiReply {
   reply: string;
-};
+}

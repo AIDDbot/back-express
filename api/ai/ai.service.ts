@@ -1,5 +1,3 @@
 import type { AiReply } from "./ai.types.js";
 
-export function generateReply(prompt: string): AiReply {
-  return { reply: `You said: ${prompt}` };
-}
+export const generateReply = (prompt: string): AiReply => ({ reply: `You said: ${prompt}` });

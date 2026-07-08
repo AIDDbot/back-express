@@ -1,25 +1,33 @@
-import { test } from "node:test";
+import type { Request, Response } from "express";
+import { describe, it } from "node:test";
 import assert from "node:assert";
 import { getHealth } from "./health.controller.js";
 import { startHealthTracking } from "./health.service.js";
 
-void test("health controller", async (t) => {
+const assertHasHealthShape = (status: Record<string, unknown>): void => {
+  assert.ok("uptime" in status, "should include uptime property");
+  assert.ok("runs" in status, "should include runs property");
+  assert.ok(typeof status.uptime === "number", "uptime should be a number");
+  assert.ok(typeof status.runs === "number", "runs should be a number");
+};
+
+describe("health controller", () => {
   startHealthTracking();
 
-  await t.test("getHealth returns a function", () => {
+  it("getHealth returns a function", () => {
     assert.ok(typeof getHealth === "function", "should export a function");
   });
 
-  await t.test("getHealth handler calls res.json with health status", async () => {
+  it("getHealth handler calls res.json with health status", () => {
     let jsonData: unknown;
     const mockReq = {};
     const mockRes = {
-      json: (data: unknown) => {
+      json: (data: unknown): void => {
         jsonData = data;
       },
     };
 
-    getHealth(mockReq as any, mockRes as any);
+    getHealth(mockReq as unknown as Request, mockRes as unknown as Response);
 
     assert.ok(jsonData, "should call res.json with data");
     assert.ok(
@@ -27,10 +35,6 @@ void test("health controller", async (t) => {
       "should pass an object to res.json",
     );
 
-    const status = jsonData as Record<string, unknown>;
-    assert.ok("uptime" in status, "should include uptime property");
-    assert.ok("runs" in status, "should include runs property");
-    assert.ok(typeof status.uptime === "number", "uptime should be a number");
-    assert.ok(typeof status.runs === "number", "runs should be a number");
+    assertHasHealthShape(jsonData as Record<string, unknown>);
   });
 });

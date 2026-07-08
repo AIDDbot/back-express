@@ -1,4 +1,5 @@
 # back-express
+
 Archetype with boilerplate code for a backend API with express
 
 ## Quick start
@@ -12,7 +13,8 @@ nub run dev   # starts Express, serves API + static client
 
 ---
 
--**Author** 
- - [Alberto Basalo](https://albertobasalo.dev) 
- - [GitHub](https://github.com/AIDDbot/AIDDbot) 
- - [A.I. Code Academy](https://aicode.academy) (ES)
+-**Author**
+
+- [Alberto Basalo](https://albertobasalo.dev)
+- [GitHub](https://github.com/AIDDbot/AIDDbot)
+- [A.I. Code Academy](https://aicode.academy) (ES)

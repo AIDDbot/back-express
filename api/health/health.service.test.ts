@@ -1,26 +1,28 @@
-import { test } from "node:test";
-import assert from "node:assert";
+import { describe, it } from "node:test";
 import { getHealthStatus, startHealthTracking } from "./health.service.js";
+import assert from "node:assert";
 
-void test("health service", async (t) => {
+const MIN_UPTIME = 0;
+
+describe("health service", () => {
   startHealthTracking();
 
-  await t.test("getHealthStatus returns health status object", () => {
+  it("getHealthStatus returns health status object", () => {
     const result = getHealthStatus();
 
     assert.ok(result, "should return a result");
     assert.ok(typeof result.uptime === "number", "uptime should be a number");
-    assert.ok(result.uptime > 0, "uptime should be greater than 0");
+    assert.ok(result.uptime > MIN_UPTIME, "uptime should be greater than 0");
     assert.ok(typeof result.runs === "number", "runs should be a number");
   });
 
-  await t.test("getHealthStatus has valid structure", () => {
+  it("getHealthStatus has valid structure", () => {
     const result = getHealthStatus();
 
     assert.ok(Object.keys(result).includes("uptime"), "should include uptime property");
     assert.ok(Object.keys(result).includes("runs"), "should include runs property");
     assert.deepStrictEqual(
-      Object.keys(result).sort(),
+      Object.keys(result).toSorted(),
       ["runs", "uptime"],
       "should only have uptime and runs properties",
     );

@@ -8,8 +8,8 @@
     "start": "nub server.ts",
     "test": "nub --test **/*.test.ts",
     "test:watch": "nub --test --watch **/*.test.ts",
-    "format": "oxfmt . ",
-    "lint": "oxlint --fix-dangerously --format=agent .",
+    "format": "oxfmt ",
+    "lint": "oxlint --format=agent .",
     "typecheck": "oxlint --type-aware --type-check --format=agent ."
   },
   "dependencies": {
