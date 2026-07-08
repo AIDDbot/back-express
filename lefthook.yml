@@ -2,8 +2,9 @@ colors: false
 no_tty: true
 pre-commit:
   commands:
+    debug:
+      run: 'echo "staged: {staged_files}"'
     lint:
-      run: `echo "hello"`
       run: nub run lint
       run: nub run check
       stage_fixed: true
