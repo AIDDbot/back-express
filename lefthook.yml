@@ -1,3 +1,4 @@
+assert_lefthook_installed: true
 colors: false
 no_tty: true
 pre-commit:
