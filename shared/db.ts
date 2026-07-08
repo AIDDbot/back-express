@@ -3,6 +3,7 @@ import { dbPath } from "./config.js";
 import { mkdirSync } from "node:fs";
 import path from "node:path";
 
+// oxlint-disable-next-line eslint/init-declarations -- lazy singleton, assigned on first getDb() call.
 let db: DatabaseSync | undefined;
 
 export const getDb = (): DatabaseSync => {

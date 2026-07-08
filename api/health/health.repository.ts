@@ -16,6 +16,7 @@ export const recordRun = (): void => {
 
 export const getRunsCount = (): number => {
   const SELECT = "SELECT COUNT(*) AS count FROM runs";
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- node:sqlite returns an untyped row; COUNT(*) is always a number.
   const { count } = getDb().prepare(SELECT).get() as {
     count: number;
   };
