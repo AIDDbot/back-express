@@ -3,6 +3,7 @@ no_tty: true
 pre-commit:
   commands:
     lint:
+      run: `echo "hello"`
       run: nub run lint
       run: nub run check
       stage_fixed: true
