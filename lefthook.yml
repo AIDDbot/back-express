@@ -3,12 +3,13 @@ no_tty: true
 pre-commit:
   parallel: true
   commands:
-    # lint:
-    #   run: nub run lint
-    #   stage_fixed: true
     format:
       glob: "*.{ts,tsx,json,md}"
       run: nub run format {staged_files}
+      stage_fixed: true
+    lint:
+      glob: "*.{ts,tsx,json,md}"
+      run: nub run lint {staged_files}
       stage_fixed: true
 
 # pre-push:

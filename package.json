@@ -9,7 +9,7 @@
     "test": "nub --test **/*.test.ts",
     "test:watch": "nub --test --watch **/*.test.ts",
     "format": "oxfmt ",
-    "lint": "oxlint --format=agent .",
+    "lint": "oxlint --fix --fix-suggestions --fix-dangerously  --format=agent ",
     "typecheck": "oxlint --type-aware --type-check --format=agent ."
   },
   "dependencies": {
