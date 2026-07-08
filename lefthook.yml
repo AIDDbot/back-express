@@ -4,8 +4,7 @@ pre-commit:
   parallel: true
   commands:
     format:
-      glob: "*.{ts,tsx,json,md}"
-      run: nub run format {staged_files}
+      run: nub run format
       stage_fixed: true
     lint:
       run: nub run lint
