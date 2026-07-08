@@ -16,7 +16,7 @@ export const recordRun = (): void => {
 };
 
 export const getRunsCount = (): number => {
-  const SELECT = "SELECT COUNT(*) AS count FROM runs";
+  let SELECT = "SELECT COUNT(*) AS count FROM runs";
   const { count } = getDb().prepare(SELECT).get() as {
     count: number;
   };
