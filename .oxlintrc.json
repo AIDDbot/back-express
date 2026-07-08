@@ -6,7 +6,7 @@
     "suspicious": "error",
     "restriction": "error",
     "perf": "warn",
-    "style": "warn",
+    "style": "error",
     "pedantic": "off",
     "nursery": "off"
   },
