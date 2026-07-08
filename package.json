@@ -24,6 +24,13 @@
     "oxlint-tsgolint": "^0.24.0",
     "typescript": "^7.0.1-rc"
   },
+  "devEngines": {
+    "packageManager": {
+      "name": "nub",
+      "version": "^0.4.2",
+      "onFail": "warn"
+    }
+  },
   "engines": {
     "node": ">=26.0.0"
   }
