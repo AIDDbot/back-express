@@ -10,7 +10,7 @@
     "test:watch": "nub --test --watch **/*.test.ts",
     "format": "oxfmt ",
     "lint": "oxlint --fix --fix-suggestions --fix-dangerously ",
-    "typecheck": "oxlint --type-aware --type-check --format=agent ."
+    "run: nub run lint": "oxlint --type-aware --type-check "
   },
   "dependencies": {
     "cors": "^2.8.6",
