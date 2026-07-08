@@ -1,14 +1,13 @@
 colors: false
 no_tty: true
 pre-commit:
-  parallel: true
   commands:
-    format:
-      run: nub run format
-      stage_fixed: true
     lint:
       run: nub run lint
       run: nub run check
+      stage_fixed: true
+    format:
+      run: nub run format
       stage_fixed: true
 
 # pre-push:
