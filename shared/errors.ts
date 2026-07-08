@@ -19,7 +19,10 @@ interface HttpError {
 const CLIENT_ERROR_MIN = 400;
 const SERVER_ERROR_MIN = 500;
 
-const pickBadRequestMessage = (expose: boolean | undefined, message: string | undefined): string => {
+const pickBadRequestMessage = (
+  expose: boolean | undefined,
+  message: string | undefined,
+): string => {
   if (expose && message) {
     return message;
   }
@@ -39,7 +42,11 @@ export const errorHandler = (
   }
   /* Http-errors convention used by body-parser and friends (e.g. malformed JSON). */
   const { statusCode, expose, message } = (err ?? {}) as HttpError;
-  if (typeof statusCode === "number" && statusCode >= CLIENT_ERROR_MIN && statusCode < SERVER_ERROR_MIN) {
+  if (
+    typeof statusCode === "number" &&
+    statusCode >= CLIENT_ERROR_MIN &&
+    statusCode < SERVER_ERROR_MIN
+  ) {
     res.status(statusCode).json({ error: pickBadRequestMessage(expose, message) });
     return;
   }

@@ -9,7 +9,6 @@ pre-commit:
       stage_fixed: true
     lint:
       run: nub run lint
-      run: nub run check
       stage_fixed: true
 
 # pre-push:

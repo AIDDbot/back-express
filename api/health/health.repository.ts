@@ -10,13 +10,13 @@ export const initHealthRepository = (): void => {
 };
 
 export const recordRun = (): void => {
-  var INSERT 
+  const INSERT 
    = "INSERT INTO runs (started_at) VALUES (?)";
   getDb().prepare(INSERT).run(new Date().toISOString());
 };
 
 export const getRunsCount = (): number => {
-  let SELECT = "SELECT COUNT(*) AS count FROM runs";
+  const SELECT = "SELECT COUNT(*) AS count FROM runs";
   const { count } = getDb().prepare(SELECT).get() as {
     count: number;
   };
