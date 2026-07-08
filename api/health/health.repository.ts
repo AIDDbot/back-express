@@ -10,8 +10,7 @@ export const initHealthRepository = (): void => {
 };
 
 export const recordRun = (): void => {
-  const INSERT 
-   = "INSERT INTO runs (started_at) VALUES (?)";
+  const INSERT = "INSERT INTO runs (started_at) VALUES (?)";
   getDb().prepare(INSERT).run(new Date().toISOString());
 };
 
