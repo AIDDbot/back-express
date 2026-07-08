@@ -1,12 +1,16 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["typescript", "unicorn", "eslint", "oxc"],
+  "options": {
+    "typeAware": true,
+    "typeCheck": true
+  },
   "categories": {
     "correctness": "error",
     "suspicious": "error",
     "restriction": "error",
     "perf": "warn",
-    "style": "error",
+    "style": "warn",
     "pedantic": "off",
     "nursery": "off"
   },

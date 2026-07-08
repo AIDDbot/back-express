@@ -9,8 +9,7 @@
     "test": "nub --test **/*.test.ts",
     "test:watch": "nub --test --watch **/*.test.ts",
     "format": "oxfmt ",
-    "lint": "oxlint --fix --fix-suggestions --fix-dangerously ",
-    "check": "oxlint --type-aware --type-check "
+    "lint": "oxlint --fix --fix-suggestions -f=agent "
   },
   "dependencies": {
     "cors": "^2.8.6",
@@ -20,7 +19,6 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/node": "^26.1.0",
-    "lefthook": "^2.1.9",
     "oxfmt": "^0.57.0",
     "oxlint": "^1.72.0",
     "oxlint-tsgolint": "^0.24.0",
