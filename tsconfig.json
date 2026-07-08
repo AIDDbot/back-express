@@ -3,9 +3,6 @@
     "target": "ES2023",
     "lib": ["ES2023"],
     "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "strict": true,
-    "skipLibCheck": true,
-    "resolveJsonModule": true
+    "moduleResolution": "NodeNext"
   }
 }
