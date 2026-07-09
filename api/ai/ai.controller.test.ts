@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { describe, it } from "node:test";
-import { ApiError } from "../../shared/errors.js";
+import { ApiError } from "../../core/errors.js";
 import assert from "node:assert";
 import { postAi } from "./ai.controller.js";
 
