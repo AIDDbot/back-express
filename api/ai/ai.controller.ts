@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import type { AiRequest } from "./ai.types.js";
-import { ApiError } from "../../core/errors.js";
+import { ApiError } from "../../server/errors.js";
 import { generateReply } from "./ai.service.js";
 
 const BAD_REQUEST = 400;

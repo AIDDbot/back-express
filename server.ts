@@ -1,9 +1,9 @@
 import { apiRouter } from "./api/api.js";
 import cors from "cors";
-import { errorHandler } from "./core/errors.js";
+import { errorHandler } from "./server/errors.js";
 import express from "express";
-import { listen } from "./core/listener.js";
-import { port } from "./core/config.js";
+import { listen } from "./server/listener.js";
+import { port } from "./server/config.js";
 import { startHealthTracking } from "./api/health/health.service.js";
 
 const app = express();

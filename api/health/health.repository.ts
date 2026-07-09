@@ -1,4 +1,4 @@
-import { getDb } from "../../core/db.js";
+import { getDb } from "../../server/db.js";
 
 export const initHealthRepository = (): void => {
   getDb().exec(`
