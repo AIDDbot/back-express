@@ -7,8 +7,8 @@ import { startHealthTracking } from "./health.service.js";
 const assertHasHealthShape = (status: Record<string, unknown>): void => {
   assert.ok("uptime" in status, "should include uptime property");
   assert.ok("runs" in status, "should include runs property");
-  assert.ok(typeof status.uptime === "number", "uptime should be a number");
-  assert.ok(typeof status.runs === "number", "runs should be a number");
+  assert.ok(typeof status["uptime"] === "number", "uptime should be a number");
+  assert.ok(typeof status["runs"] === "number", "runs should be a number");
 };
 
 describe("health controller", () => {
