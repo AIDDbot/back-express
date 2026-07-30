@@ -9,7 +9,7 @@
     "start": "nub server.ts",
     "test": "nub --test **/*.test.ts",
     "test:watch": "nub --test --watch **/*.test.ts",
-    "lint": "tsc --noEmit "
+    "lint": "tsc --noEmit && oxlint --fix"
   },
   "dependencies": {
     "cors": "^2.8.6",
@@ -20,6 +20,7 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/node": "^26.1.2",
+    "oxlint": "^1.76.0",
     "typescript": "^7.0.2"
   },
   "devEngines": {

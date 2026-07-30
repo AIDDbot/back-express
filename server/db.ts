@@ -1,15 +1,16 @@
+import { mkdirSync } from "node:fs";
+import { dirname } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { dbPath } from "./config.js";
-import { mkdirSync } from "node:fs";
-import path from "node:path";
 
-// oxlint-disable-next-line eslint/init-declarations -- lazy singleton, assigned on first getDb() call.
-let db: DatabaseSync | undefined;
+const databaseConnectionCache: { current?: DatabaseSync } = {};
 
 export const getDb = (): DatabaseSync => {
+  let db = databaseConnectionCache.current;
   if (!db) {
-    mkdirSync(path.dirname(dbPath), { recursive: true });
+    mkdirSync(dirname(dbPath), { recursive: true });
     db = new DatabaseSync(dbPath);
+    databaseConnectionCache.current = db;
     /*
      * WAL lets readers and writers overlap; busy_timeout makes concurrent writers
      * (e.g. multiple node:test worker processes sharing the dev db file) wait

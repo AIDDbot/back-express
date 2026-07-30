@@ -1,8 +1,10 @@
 import type { Request, Response } from "express";
+import { strict as assert } from "node:assert";
 import { describe, it } from "node:test";
-import assert from "node:assert";
 import { getHealth } from "./health.controller.js";
 import { startHealthTracking } from "./health.service.js";
+
+const UNSET = Symbol("unset");
 
 const assertHasHealthShape = (status: Record<string, unknown>): void => {
   assert.ok("uptime" in status, "should include uptime property");
@@ -19,7 +21,7 @@ describe("health controller", () => {
   });
 
   it("getHealth handler calls res.json with health status", () => {
-    let jsonData: unknown;
+    let jsonData: unknown | typeof UNSET = UNSET;
     const mockReq = {};
     const mockRes = {
       json: (data: unknown): void => {
@@ -29,7 +31,7 @@ describe("health controller", () => {
 
     getHealth(mockReq as unknown as Request, mockRes as unknown as Response);
 
-    assert.ok(jsonData, "should call res.json with data");
+    assert.notStrictEqual(jsonData, UNSET, "should call res.json with data");
     assert.ok(
       typeof jsonData === "object" && jsonData !== null,
       "should pass an object to res.json",

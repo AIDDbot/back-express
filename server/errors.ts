@@ -16,6 +16,7 @@ interface HttpError {
   message?: string;
 }
 
+
 const CLIENT_ERROR_MIN = 400;
 const SERVER_ERROR_MIN = 500;
 
@@ -29,7 +30,7 @@ const pickBadRequestMessage = (
   return "Bad request";
 };
 
-// oxlint-disable-next-line eslint/max-params -- Express detects error middleware by arity; it must take exactly 4 params.
+// eslint-disable-next-line max-params
 export const errorHandler = (
   err: unknown,
   _req: Request,
