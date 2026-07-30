@@ -15,6 +15,9 @@ importers:
         specifier: ^5.2.1
         version: 5.2.1
     devDependencies:
+      '@nubjs/types':
+        specifier: '>=0.4.13 <=0.6.0'
+        version: 0.6.0(@types/node@26.1.2)
       '@types/cors':
         specifier: ^2.8.19
         version: 2.8.19
@@ -22,13 +25,18 @@ importers:
         specifier: ^5.0.6
         version: 5.0.6
       '@types/node':
-        specifier: ^26.1.0
-        version: 26.1.0
+        specifier: ^26.1.2
+        version: 26.1.2
       typescript:
         specifier: ^7.0.2
         version: 7.0.2
 
 packages:
+
+  '@nubjs/types@0.6.0':
+    resolution: {integrity: sha512-Zu67igj8OMnZuAK9PDXd96B9qCL6qcfjW2gRtXvM5DTh1jgNzHJNnZh5KAomIiiLaDb/qTFq/tecuQuzw1ldow==}
+    peerDependencies:
+      '@types/node': '>=25'
 
   '@types/body-parser@1.19.6':
     resolution: {integrity: sha512-HLFeCYgz89uk22N5Qg3dvGvsv46B8GLvKKo1zKG4NybA8U2DiEO3w9lqGg29t/tfLRJpJ6iQxnVw4OnB7MoM9g==}
@@ -50,6 +58,9 @@ packages:
 
   '@types/node@26.1.0':
     resolution: {integrity: sha512-O0A1G3xPGy4w7AgQdAQYUlQ+BKk2Oovw8eRpofyp5KdBZULnbe+WqaOVNrm705SHphCiG4XHsACrSmPu1f+Kgw==}
+
+  '@types/node@26.1.2':
+    resolution: {integrity: sha512-Vu4a5UFA9rIIFJ7rB/Vaafh9lrCQszopTCx6KjFboXTGQbPNasehVR5TEiithSDGyd1DEiUByggTZsg8jukeIg==}
 
   '@types/qs@6.15.1':
     resolution: {integrity: sha512-GZHUBZR9hckSUhrxmp1nG6NwdpM9fCunJwyThLW1X3AyHgd9IlHb6VANpQQqDr2o/qQp6McZ3y/IA2rVzKzSbw==}
@@ -459,6 +470,10 @@ packages:
 
 snapshots:
 
+  '@nubjs/types@0.6.0(@types/node@26.1.2)':
+    dependencies:
+      '@types/node': 26.1.2
+
   '@types/body-parser@1.19.6':
     dependencies:
       '@types/connect': 3.4.38
@@ -470,7 +485,7 @@ snapshots:
 
   '@types/cors@2.8.19':
     dependencies:
-      '@types/node': 26.1.0
+      '@types/node': 26.1.2
 
   '@types/express-serve-static-core@5.1.1':
     dependencies:
@@ -488,6 +503,10 @@ snapshots:
   '@types/http-errors@2.0.5': {}
 
   '@types/node@26.1.0':
+    dependencies:
+      undici-types: 8.3.0
+
+  '@types/node@26.1.2':
     dependencies:
       undici-types: 8.3.0
 
