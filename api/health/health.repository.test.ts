@@ -2,8 +2,8 @@ import { describe, it } from "node:test";
 import { getRunsCount, initHealthRepository, recordRun } from "./health.repository.js";
 import assert from "node:assert";
 
-const MIN_COUNT = 0;
-const MIN_INCREMENT = 1;
+const MIN_COUNT = 0,
+ MIN_INCREMENT = 1;
 
 describe("health repository", () => {
   initHealthRepository();
@@ -16,8 +16,8 @@ describe("health repository", () => {
   });
 
   it("getRunsCount is deterministic across calls", () => {
-    const firstCall = getRunsCount();
-    const secondCall = getRunsCount();
+    const firstCall = getRunsCount(),
+     secondCall = getRunsCount();
 
     assert.strictEqual(firstCall, secondCall, "count should be the same on consecutive calls");
   });

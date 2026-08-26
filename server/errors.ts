@@ -17,10 +17,10 @@ interface HttpError {
 }
 
 
-const CLIENT_ERROR_MIN = 400;
-const SERVER_ERROR_MIN = 500;
+const CLIENT_ERROR_MIN = 400,
+ SERVER_ERROR_MIN = 500,
 
-const pickBadRequestMessage = (
+ pickBadRequestMessage = (
   expose: boolean | undefined,
   message: string | undefined,
 ): string => {

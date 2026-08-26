@@ -4,9 +4,9 @@ import { describe, it } from "node:test";
 import { getHealth } from "./health.controller.js";
 import { startHealthTracking } from "./health.service.js";
 
-const UNSET = Symbol("unset");
+const UNSET = Symbol("unset"),
 
-const assertHasHealthShape = (status: Record<string, unknown>): void => {
+ assertHasHealthShape = (status: Record<string, unknown>): void => {
   assert.ok("uptime" in status, "should include uptime property");
   assert.ok("runs" in status, "should include runs property");
   assert.ok(typeof status["uptime"] === "number", "uptime should be a number");
@@ -22,8 +22,8 @@ describe("health controller", () => {
 
   it("getHealth handler calls res.json with health status", () => {
     let jsonData: unknown | typeof UNSET = UNSET;
-    const mockReq = {};
-    const mockRes = {
+    const mockReq = {},
+     mockRes = {
       json: (data: unknown): void => {
         jsonData = data;
       },

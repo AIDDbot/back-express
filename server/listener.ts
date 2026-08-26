@@ -4,11 +4,11 @@ import { createInterface } from "node:readline/promises";
 import { setTimeout as delay } from "node:timers/promises";
 import { promisify } from "node:util";
 
-const exec = promisify(execCallback);
-const EXIT_FAILURE = 1;
-const FIRST_ITEM_INDEX = 0;
-const LAST_ITEM_OFFSET = 1;
-const RETRY_DELAY_MS = 300;
+const exec = promisify(execCallback),
+ EXIT_FAILURE = 1,
+ FIRST_ITEM_INDEX = 0,
+ LAST_ITEM_OFFSET = 1,
+ RETRY_DELAY_MS = 300;
 
 interface PortConflict {
   pid: number;
@@ -31,32 +31,32 @@ const parseWindowsPid = (netstatOutput: string, port: number): number | undefine
     return undefined;
   }
   return pid;
-};
+},
 
-const findWindowsConflict = async (port: number): Promise<PortConflict | undefined> => {
-  const { stdout: netstatOutput } = await exec("netstat -ano");
-  const pid = parseWindowsPid(netstatOutput, port);
+ findWindowsConflict = async (port: number): Promise<PortConflict | undefined> => {
+  const { stdout: netstatOutput } = await exec("netstat -ano"),
+   pid = parseWindowsPid(netstatOutput, port);
   if (pid === undefined) {
     return undefined;
   }
-  const { stdout: taskListOutput } = await exec(`tasklist /FI "PID eq ${pid}" /FO CSV /NH`);
-  const processName =
+  const { stdout: taskListOutput } = await exec(`tasklist /FI "PID eq ${pid}" /FO CSV /NH`),
+   processName =
     taskListOutput.split(",")[FIRST_ITEM_INDEX]?.replaceAll('"', "") ?? "unknown process";
   return { pid, processName };
-};
+},
 
-const findPosixConflict = async (port: number): Promise<PortConflict | undefined> => {
-  const { stdout: pidOutput } = await exec(`lsof -i :${port} -sTCP:LISTEN -t`);
-  const pid = Number(pidOutput.trim().split("\n")[FIRST_ITEM_INDEX]);
+ findPosixConflict = async (port: number): Promise<PortConflict | undefined> => {
+  const { stdout: pidOutput } = await exec(`lsof -i :${port} -sTCP:LISTEN -t`),
+   pid = Number(pidOutput.trim().split("\n")[FIRST_ITEM_INDEX]);
   if (Number.isNaN(pid)) {
     return undefined;
   }
   const { stdout: commandOutput } = await exec(`ps -p ${pid} -o comm=`);
   return { pid, processName: commandOutput.trim() };
-};
+},
 
 /** Best-effort lookup; swallows errors from missing tools (e.g. lsof) so callers get a graceful fallback. */
-const findPortConflict = async (port: number): Promise<PortConflict | undefined> => {
+ findPortConflict = async (port: number): Promise<PortConflict | undefined> => {
   try {
     if (process.platform === "win32") {
       return await findWindowsConflict(port);
@@ -65,39 +65,39 @@ const findPortConflict = async (port: number): Promise<PortConflict | undefined>
   } catch {
     return undefined;
   }
-};
+},
 
-const killProcess = async (pid: number): Promise<void> => {
+ killProcess = async (pid: number): Promise<void> => {
   let command = `kill -9 ${pid}`;
   if (process.platform === "win32") {
     command = `taskkill /F /PID ${pid}`;
   }
   await exec(command);
-};
+},
 
-const confirm = async (question: string): Promise<boolean> => {
+ confirm = async (question: string): Promise<boolean> => {
   if (!process.stdin.isTTY) {
     return false;
   }
-  const rl = createInterface({ input: process.stdin, output: process.stdout });
-  const answer = await rl.question(question);
+  const rl = createInterface({ input: process.stdin, output: process.stdout }),
+   answer = await rl.question(question);
   rl.close();
   return /^y(?<es>es)?$/iu.test(answer.trim());
-};
+},
 
-const exitForUnknownConflict = (port: number): void => {
+ exitForUnknownConflict = (port: number): void => {
   process.stderr.write(`Port ${port} is already in use. Stop the process using it and retry.\n`);
   process.exit(EXIT_FAILURE);
-};
+},
 
-const confirmRetry = async (pid: number): Promise<void> => {
+ confirmRetry = async (pid: number): Promise<void> => {
   const shouldKill = await confirm(`Kill PID ${pid} and retry? (y/N) `);
   if (!shouldKill) {
     process.exit(EXIT_FAILURE);
   }
-};
+},
 
-const handlePortInUse = async (app: Express, port: number): Promise<void> => {
+ handlePortInUse = async (app: Express, port: number): Promise<void> => {
   const conflict = await findPortConflict(port);
   if (!conflict) {
     exitForUnknownConflict(port);
@@ -111,9 +111,9 @@ const handlePortInUse = async (app: Express, port: number): Promise<void> => {
   await killProcess(conflict.pid);
   await delay(RETRY_DELAY_MS);
   listen(app, port);
-};
+},
 
-const onServerError = (app: Express, port: number, error: NodeJS.ErrnoException): void => {
+ onServerError = (app: Express, port: number, error: NodeJS.ErrnoException): void => {
   if (error.code === "EADDRINUSE") {
     void handlePortInUse(app, port);
     return;

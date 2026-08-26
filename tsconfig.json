@@ -8,8 +8,8 @@
       "es2024"
     ],
     "types": [
-      "node",
-      "@nubjs/types"
+      "bun",
+      "node"
     ],
     "noEmit": true,
     // Other Outputs
