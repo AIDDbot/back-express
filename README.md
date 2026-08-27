@@ -29,7 +29,6 @@ bun dev     # runs in watch mode for development
 bun lint    # runs the linter
 ```
 
-
 ## Tool stack
 
 - [TypeScript7](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/) : typed superset of JavaScript that compiles to plain JavaScript.
