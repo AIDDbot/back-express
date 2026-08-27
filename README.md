@@ -2,29 +2,31 @@
 
 Archetype with boilerplate code for a backend API with express
 
-## Quick start
+> [!IMPORTANT]
+> this projects uses `bun` as a package manager and runner.
 
+1. Install bun: the fastest tooling manager for Node.js projects.
 ```bash
-# Install Bun 1.4.0 (Windows PowerShell)
+# Install Bun 
+# (Windows PowerShell)
 powershell -c "irm bun.com/install.ps1 | iex"
+# (macOS/Linux)
+curl -fsSL https://bun.com/install | bash -s
+# Verify installation
+bun --version
+# Upgrade Bun to the latest stable version
 bun upgrade --stable
-
-# Verify pinned runtime
-bun --version   # expected: 1.4.0
-
-# Install dependencies and start the API
-bun install
-bun dev
 ```
 
-Alternative for macOS/Linux:
-
+2. Install dependencies and run the tests
 ```bash
-curl -fsSL https://bun.com/install | bash -s "bun-v1.4.0"
-bun --version   # expected: 1.4.0
 bun install
-bun dev
+bun start   # runs the server in production mode
+bun test    # runs the unit tests
+bun dev     # runs in watch mode for development
+bun lint    # runs the linter
 ```
+
 
 ## Tool stack
 
