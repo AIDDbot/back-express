@@ -2,6 +2,8 @@
 
 Archetype with boilerplate code for a backend API with express
 
+## Quick start
+
 > [!IMPORTANT]
 > this projects uses `bun` as a package manager and runner.
 
