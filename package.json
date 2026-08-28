@@ -10,7 +10,8 @@
     "test": "bun test",
     "test:watch": "bun test --watch",
     "lint": "oxlint --fix --format=agent --quiet",
-    "lint:warnings": "oxlint --deny-warnings --format=agent "
+    "lint:warnings": "oxlint --deny-warnings --format=agent ",
+    "lint:complexity": "oxlint --quiet -D complexity --format=agent"
   },
   "dependencies": {
     "cors": "^2.8.6",

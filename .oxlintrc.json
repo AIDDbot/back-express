@@ -17,7 +17,11 @@
     "style": "warn"
   },
   "rules": {
-    "eslint/sort-imports": "off"
+    "eslint/sort-imports": "off",
+    "eslint/complexity": [
+      "error",
+      8
+    ]
   },
   "env": {
     "builtin": true
