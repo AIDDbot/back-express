@@ -12,15 +12,13 @@
     "test:coverage": "bun test --coverage",
     "lint": "oxlint --fix --format=agent --quiet",
     "lint:warnings": "oxlint --deny-warnings --format=agent ",
-    "lint:complexity": "oxlint --quiet -D complexity --format=agent",
-    "mutation": "stryker run"
+    "lint:complexity": "oxlint --quiet -D complexity --format=agent"
   },
   "dependencies": {
     "cors": "^2.8.6",
     "express": "^5.2.1"
   },
   "devDependencies": {
-    "@stryker-mutator/core": "^10.0.0",
     "@types/bun": "1.4.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
