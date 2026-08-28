@@ -3,8 +3,13 @@
   "plugins": [
     "typescript",
     "unicorn",
+    "eslint",
     "oxc"
   ],
+  "options": {
+    "typeAware": true,
+    "typeCheck": true
+  },
   "categories": {
     "correctness": "error",
     "suspicious": "warn",

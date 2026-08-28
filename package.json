@@ -5,12 +5,12 @@
   "type": "module",
   "packageManager": "bun@1.4.0",
   "scripts": {
-    "has:bun": "bun -e \"const v=Bun.version; if (v !== '1.4.0') { console.error('Expected Bun 1.4.0, got ' + v); process.exit(1); }\"",
     "dev": "bun --watch server.ts",
     "start": "bun server.ts",
     "test": "bun test",
     "test:watch": "bun test --watch",
-    "lint": "tsc --noEmit && oxlint --fix"
+    "lint": "oxlint --fix --format=agent --quiet",
+    "lint:warnings": "oxlint --deny-warnings --format=agent "
   },
   "dependencies": {
     "cors": "^2.8.6",
@@ -22,6 +22,7 @@
     "@types/express": "^5.0.6",
     "@types/node": "^26.2.0",
     "oxlint": "^1.80.0",
+    "oxlint-tsgolint": "^7.0.2001",
     "typescript": "^7.0.2"
   },
   "engines": {
