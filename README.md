@@ -38,8 +38,7 @@ bun lint    # runs the linter
 
 ### Pending: 
 - [Stryker](https://stryker-mutator.io/docs/stryker-js/introduction/) : mutation testing framework for JavaScript and TypeScript.
-- [Crap4TS](https://github.com/breezy-bays-labs/crap4ts) :  find functions that are too complex and too poorly tested.
-
+- Some CRAP analysis tool for TypeScript.
 ---
 
 -**Author**
