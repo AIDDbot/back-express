@@ -1,13 +1,13 @@
+import assert from "node:assert";
 import { describe, it } from "node:test";
 import { getHealthStatus, startHealthTracking } from "./health.service.js";
-import assert from "node:assert";
 
 const MIN_UPTIME = 0;
 
-describe("health service", () => {
+void describe("health service", () => {
   startHealthTracking();
 
-  it("getHealthStatus returns health status object", () => {
+  void it("getHealthStatus returns health status object", () => {
     const result = getHealthStatus();
 
     assert.ok(result, "should return a result");
@@ -16,7 +16,7 @@ describe("health service", () => {
     assert.ok(typeof result.runs === "number", "runs should be a number");
   });
 
-  it("getHealthStatus has valid structure", () => {
+  void it("getHealthStatus has valid structure", () => {
     const result = getHealthStatus();
 
     assert.ok(Object.keys(result).includes("uptime"), "should include uptime property");
