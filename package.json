@@ -2,6 +2,11 @@
   "name": "back-express",
   "version": "1.0.0",
   "description": "Back-end Express archetype",
+  "author": {
+    "name": "Alberto Basalo",
+    "email": "albertobasalo@aicode.academy",
+    "url": "https://aicode.academy"
+  },
   "type": "module",
   "packageManager": "bun@1.4.0",
   "scripts": {

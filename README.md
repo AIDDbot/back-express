@@ -36,9 +36,6 @@ bun lint    # runs the linter
 - [Bun 1.4.0](https://bun.com/docs/installation) : JavaScript runtime and package manager used by this project.
 - [Oxlint](https://oxc.rs/docs/guide/usage/linter) : high-performance linter for  TypeScript 
 
-### Pending: 
-- [Stryker](https://stryker-mutator.io/docs/stryker-js/introduction/) : mutation testing framework for JavaScript and TypeScript.
-- Some CRAP analysis tool for TypeScript.
 ---
 
 -**Author**
