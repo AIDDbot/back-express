@@ -4,14 +4,13 @@ import { describe, it } from "node:test";
 import { getHealth } from "./health.controller.js";
 import { startHealthTracking } from "./health.service.js";
 
-const UNSET = Symbol("unset"),
-
-  assertHasHealthShape = (status: Record<string, unknown>): void => {
-    assert.ok("uptime" in status, "should include uptime property");
-    assert.ok("runs" in status, "should include runs property");
-    assert.ok(typeof status["uptime"] === "number", "uptime should be a number");
-    assert.ok(typeof status["runs"] === "number", "runs should be a number");
-  };
+const UNSET = Symbol("unset");
+const assertHasHealthShape = (status: Record<string, unknown>): void => {
+  assert.ok("uptime" in status, "should include uptime property");
+  assert.ok("runs" in status, "should include runs property");
+  assert.ok(typeof status["uptime"] === "number", "uptime should be a number");
+  assert.ok(typeof status["runs"] === "number", "runs should be a number");
+};
 
 void describe("health controller", () => {
   startHealthTracking();
@@ -22,12 +21,12 @@ void describe("health controller", () => {
 
   void it("getHealth handler calls res.json with health status", () => {
     let jsonData: Record<string, unknown> | typeof UNSET = UNSET;
-    const mockReq = {},
-      mockRes = {
-        json: (data: unknown): void => {
-          jsonData = data as Record<string, unknown>;
-        },
-      };
+    const mockReq = {};
+    const mockRes = {
+      json: (data: unknown): void => {
+        jsonData = data as Record<string, unknown>;
+      },
+    };
 
     getHealth(mockReq as unknown as Request, mockRes as unknown as Response);
 
