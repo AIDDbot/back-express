@@ -1,0 +1,14 @@
+  [test]
+  coverageThreshold = {
+    lines = 0.80,
+    functions = 0.80,
+    statements = 0.80
+  }
+
+  coverageSkipTestFiles = true
+  coverageReporter = ["text", "lcov"]
+  coverageDir = "coverage"
+  coveragePathIgnorePatterns = [
+    "**/*.config.*",
+    "**/generated/**"
+  ]

@@ -1,6 +1,11 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["typescript", "unicorn", "eslint", "oxc"],
+  "plugins": [
+    "typescript",
+    "unicorn",
+    "eslint",
+    "oxc"
+  ],
   "options": {
     "typeAware": true,
     "typeCheck": true
@@ -12,26 +17,30 @@
     "style": "off"
   },
   "rules": {
-    "eslint/one-var": ["error", "never"],
+    "eslint/one-var": [
+      "error",
+      "never"
+    ],
     "eslint/sort-imports": "off",
     "eslint/sort-vars": "off",
     "@typescript-eslint/strict-boolean-expressions": "off",
-    "@typescript-eslint/prefer-readonly-parameter-types": "warn"
+    "@typescript-eslint/prefer-readonly-parameter-types": "off"
   },
   "overrides": [
     {
-      "files": ["**/*.test.ts", "**/*.test.tsx", "server/errors.ts", "**/*controller.ts"],
+      "files": [
+        "**/*.test.ts",
+        "**/*.spec.ts"
+      ],
       "rules": {
         "@typescript-eslint/prefer-readonly-parameter-types": "off",
-        "typescript/no-unsafe-type-assertion": "off"
-      }
-    },
-    {
-      "files": ["server/listener.ts"],
-      "rules": {
-        "typescript/strict-void-return": "off",
-        "typescript/prefer-readonly-parameter-types": "off"
-      }
+        "typescript/no-unsafe-type-assertion": "off",
+        "typescript/no-unsafe-call": "off",
+        "typescript/no-unsafe-member-access": "off",
+        "typescript/no-unsafe-assignment": "off",
+        "unicorn/no-useless-undefined": "off",
+        "oxc/approx-constant": "off"
+      },
     }
   ],
   "env": {

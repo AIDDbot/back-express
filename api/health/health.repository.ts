@@ -21,5 +21,8 @@ export const getRunsCount = (): number => {
 
   // Some SQLite drivers may return numeric values as strings or other types.
   // Coerce to a finite number with a safe fallback.
-  return coerceToFiniteNumber((row as any)?.count, 0);
+  if (row && typeof row === "object" && "count" in row) {
+    return coerceToFiniteNumber((row as Record<string, unknown>)["count"], 0);
+  }
+  return 0;
 };

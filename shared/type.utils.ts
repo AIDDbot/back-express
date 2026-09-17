@@ -20,7 +20,7 @@ export const parseNumberFromString = (input: string): number | null => {
 export const parseAllNumbersFromString = (input: string): number[] => {
   if (typeof input !== "string" || input.trim() === "") return [];
   const matches = input.match(/[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?/gu) ?? [];
-  return matches.map((m) => Number(m)).filter(Number.isFinite);
+  return matches.map(Number).filter((n) => Number.isFinite(n));
 };
 
 export const safeParseFloat = (v: unknown, fallback = 0): number => {
@@ -41,7 +41,7 @@ const parseStringToFloat = (s: string, fallback: number): number => {
   const n = Number(t);
   if (Number.isFinite(n)) return n;
   const extracted = parseNumberFromString(t);
-  return extracted === null ? fallback : extracted;
+  return extracted ?? fallback;
 };
 
 const parseStringToInt = (s: string, fallback: number, radix: number): number => {

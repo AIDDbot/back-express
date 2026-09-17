@@ -20,8 +20,8 @@ interface HttpError {
 const CLIENT_ERROR_MIN = 400;
 const SERVER_ERROR_MIN = 500;
 const pickBadRequestMessage = (
-  expose: boolean | undefined,
-  message: string | undefined,
+  expose: Readonly<boolean | undefined>,
+  message: Readonly<string | undefined>,
 ): string => {
   if (expose && message) {
     return message;
@@ -29,20 +29,20 @@ const pickBadRequestMessage = (
   return "Bad request";
 };
 
-const getHttpError = (err: unknown): HttpError => err ?? {};
+const getHttpError = (err: Readonly<unknown>): HttpError => err ?? {};
 
-const toStatusCode = (http: HttpError): number =>
-  coerceToFiniteNumber((http as any).statusCode, CLIENT_ERROR_MIN);
+const toStatusCode = (http: Readonly<HttpError>): number =>
+  coerceToFiniteNumber(http.statusCode, CLIENT_ERROR_MIN);
 
 const isClientError = (status: number): boolean =>
   status >= CLIENT_ERROR_MIN && status < SERVER_ERROR_MIN;
-const handleApiError = (err: unknown, res: Response): boolean => {
+const handleApiError = (err: Readonly<unknown>, res: Readonly<Response>): boolean => {
   if (!(err instanceof ApiError)) return false;
   res.status(err.status).json({ error: err.message });
   return true;
 };
 
-const handleClientError = (err: unknown, res: Response): boolean => {
+const handleClientError = (err: Readonly<unknown>, res: Readonly<Response>): boolean => {
   const http = getHttpError(err);
   const status = toStatusCode(http);
   if (!isClientError(status)) return false;
@@ -50,16 +50,17 @@ const handleClientError = (err: unknown, res: Response): boolean => {
   return true;
 };
 
-const handleServerError = (err: unknown, res: Response): void => {
-  process.stderr.write(`${String(err)}\n`);
+const handleServerError = (err: Readonly<unknown>, res: Readonly<Response>): void => {
+  const errorMessage = err instanceof Error ? err.message : "Unknown error";
+  process.stderr.write(`${errorMessage}\n`);
   res.status(SERVER_ERROR_MIN).json({ error: "Internal server error" });
 };
 
 export const errorHandler = (
-  err: unknown,
-  _req: Request,
-  res: Response,
-  _next: NextFunction,
+  err: Readonly<unknown>,
+  _req: Readonly<Request>,
+  res: Readonly<Response>,
+  _next: Readonly<NextFunction>,
 ): void => {
   if (handleApiError(err, res)) return;
   if (handleClientError(err, res)) return;
