@@ -14,17 +14,9 @@
     "correctness": "error",
     "suspicious": "warn",
     "pedantic": "warn",
-    "style": "warn"
+    "style": "off"
   },
   "rules": {
-    "eslint/complexity": [
-      "error",
-      4
-    ],
-    "eslint/max-depth": [
-      "error",
-      2
-    ],
     "eslint/one-var": "off",
     "eslint/sort-imports": "off",
     "eslint/sort-vars": "off",
