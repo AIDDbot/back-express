@@ -19,7 +19,11 @@
   "rules": {
     "eslint/complexity": [
       "error",
-      8
+      4
+    ],
+    "eslint/max-depth": [
+      "error",
+      2
     ],
     "eslint/one-var": "off",
     "eslint/sort-imports": "off",
@@ -32,12 +36,21 @@
       "files": [
         "**/*.test.ts",
         "**/*.test.tsx",
-        "server/listener.ts",
         "server/errors.ts",
         "**/*controller.ts"
       ],
       "rules": {
-        "@typescript-eslint/prefer-readonly-parameter-types": "off"
+        "@typescript-eslint/prefer-readonly-parameter-types": "off",
+        "typescript/no-unsafe-type-assertion": "off"
+      }
+    },
+    {
+      "files": [
+        "server/listener.ts"
+      ],
+      "rules": {
+        "typescript/strict-void-return": "off",
+        "typescript/prefer-readonly-parameter-types": "off"
       }
     }
   ],

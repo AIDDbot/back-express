@@ -16,7 +16,7 @@
     "lint": "oxlint --fix --format=agent --quiet",
     "craft:coverage": "bun test --coverage",
     "craft:warnings": "oxlint --deny-warnings --format=agent ",
-    "craft:complexity": "oxlint --quiet -D complexity --format=agent"
+    "craft:complexity": "oxlint --quiet -D complexity  --format=agent"
   },
   "dependencies": {
     "cors": "^2.8.6",
