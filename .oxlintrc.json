@@ -1,11 +1,6 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": [
-    "typescript",
-    "unicorn",
-    "eslint",
-    "oxc"
-  ],
+  "plugins": ["typescript", "unicorn", "eslint", "oxc"],
   "options": {
     "typeAware": true,
     "typeCheck": true
@@ -17,7 +12,7 @@
     "style": "off"
   },
   "rules": {
-    "eslint/one-var": "off",
+    "eslint/one-var": ["error", "never"],
     "eslint/sort-imports": "off",
     "eslint/sort-vars": "off",
     "@typescript-eslint/strict-boolean-expressions": "off",
@@ -25,21 +20,14 @@
   },
   "overrides": [
     {
-      "files": [
-        "**/*.test.ts",
-        "**/*.test.tsx",
-        "server/errors.ts",
-        "**/*controller.ts"
-      ],
+      "files": ["**/*.test.ts", "**/*.test.tsx", "server/errors.ts", "**/*controller.ts"],
       "rules": {
         "@typescript-eslint/prefer-readonly-parameter-types": "off",
         "typescript/no-unsafe-type-assertion": "off"
       }
     },
     {
-      "files": [
-        "server/listener.ts"
-      ],
+      "files": ["server/listener.ts"],
       "rules": {
         "typescript/strict-void-return": "off",
         "typescript/prefer-readonly-parameter-types": "off"

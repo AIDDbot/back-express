@@ -8,8 +8,9 @@ Archetype with boilerplate code for a backend API with express
 > this projects uses `bun` as a package manager and runner.
 
 1. Install bun: the fastest tooling manager for Node.js projects.
+
 ```bash
-# Install Bun 
+# Install Bun
 # (Windows PowerShell)
 powershell -c "irm bun.com/install.ps1 | iex"
 # (macOS/Linux)
@@ -21,6 +22,7 @@ bun upgrade --stable
 ```
 
 2. Install dependencies and run the tests
+
 ```bash
 bun install
 bun start   # runs the server in production mode
@@ -34,7 +36,7 @@ bun lint    # runs the linter
 - [TypeScript7](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/) : typed superset of JavaScript that compiles to plain JavaScript.
 - [Node26](https://nodejs.org/es/blog/release/v26.0.0/) : JavaScript runtime built on Chrome's V8 JavaScript engine.
 - [Bun 1.4.0](https://bun.com/docs/installation) : JavaScript runtime and package manager used by this project.
-- [Oxlint](https://oxc.rs/docs/guide/usage/linter) : high-performance linter for  TypeScript 
+- [Oxlint](https://oxc.rs/docs/guide/usage/linter) : high-performance linter for TypeScript
 
 ---
 

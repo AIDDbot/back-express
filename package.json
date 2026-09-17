@@ -13,10 +13,15 @@
     "start": "bun server.ts",
     "test": "bun test",
     "test:watch": "bun test --watch",
-    "lint": "oxlint --fix --format=agent --quiet",
-    "craft:coverage": "bun test --coverage",
-    "craft:warnings": "oxlint --deny-warnings --format=agent ",
-    "craft:complexity": "oxlint -c .oxlintrc.complexity.json --format=agent --quiet"
+    "lint": "oxlint --format=agent --quiet",
+    "lint:fix": "oxlint --fix --format=agent --quiet",
+    "format": "oxfmt --write",
+    "format:check": "oxfmt --check",
+    "fix": "bun run lint:fix && bun run format",
+    "quality:warnings": "oxlint --deny-warnings --format=agent",
+    "quality:complexity": "oxlint -c .oxlintrc.complexity.json --format=agent --quiet",
+    "quality:coverage": "bun test --coverage",
+    "quality:all": "bun run quality:warnings && bun run quality:complexity && bun run quality:coverage"
   },
   "dependencies": {
     "cors": "^2.8.6",
@@ -26,13 +31,14 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/node": "^26.6.1",
+    "oxfmt": "^0.68.0",
     "oxlint": "^1.83.0",
     "oxlint-tsgolint": "^7.0.2001",
     "typescript": "^7.0.2"
   },
-  "packageManager": "bun@1.4.0",
   "engines": {
-    "node": ">=26.0.0",
-    "bun": ">=1.4.0"
-  }
+    "bun": ">=1.4.0",
+    "node": ">=26.0.0"
+  },
+  "packageManager": "bun@1.4.0"
 }
