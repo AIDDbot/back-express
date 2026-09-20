@@ -31,6 +31,12 @@ bun dev     # runs in watch mode for development
 bun lint    # runs the linter
 ```
 
+## Code quality checks
+
+During regular coding, `bun run lint` is the only required quality check. It runs the basic linter and provides fast feedback while changes are being developed.
+
+The other quality scripts (`quality:warnings`, `quality:complexity`, `quality:coverage`, and `quality:all`) are intended for full audits and solution-hardening work. They do not need to be run for every coding change.
+
 ## Tool stack
 
 - [TypeScript7](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/) : typed superset of JavaScript that compiles to plain JavaScript.

@@ -32,7 +32,7 @@ const pickBadRequestMessage = (
 const getHttpError = (err: Readonly<unknown>): HttpError => err ?? {};
 
 const toStatusCode = (http: Readonly<HttpError>): number =>
-  coerceToFiniteNumber(http.statusCode, CLIENT_ERROR_MIN);
+  coerceToFiniteNumber(http.statusCode, SERVER_ERROR_MIN);
 
 const isClientError = (status: number): boolean =>
   status >= CLIENT_ERROR_MIN && status < SERVER_ERROR_MIN;
