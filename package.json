@@ -16,7 +16,6 @@
     "lint": "oxlint --format=agent --quiet",
     "lint:fix": "oxlint --fix --format=agent --quiet",
     "format": "oxfmt --write",
-    "format:check": "oxfmt --check",
     "fix": "bun run lint:fix && bun run format",
     "quality:warnings": "oxlint --deny-warnings --format=agent",
     "quality:complexity": "oxlint -c .oxlintrc.complexity.json --format=agent --quiet",

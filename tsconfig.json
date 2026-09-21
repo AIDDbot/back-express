@@ -5,10 +5,7 @@
     "moduleResolution": "nodenext",
     "target": "esnext",
     // "lib": ["es2024" ],
-    "types": [
-      "node",
-      "bun"
-    ],
+    "types": ["node", "bun"],
     "noEmit": true,
     // Other Outputs
     "sourceMap": true,

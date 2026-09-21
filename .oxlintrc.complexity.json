@@ -1,36 +1,16 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "extends": [
-    ".oxlintrc.json"
-  ],
+  "extends": [".oxlintrc.json"],
   "rules": {
-    "eslint/complexity": [
-      "error",
-      8
-    ],
-    "eslint/max-depth": [
-      "error",
-      2
-    ],
-    "eslint/max-params": [
-      "error",
-      4
-    ],
-    "eslint/max-statements": [
-      "error",
-      16
-    ],
-    "eslint/max-lines-per-function": [
-      "error",
-      32
-    ]
+    "eslint/complexity": ["error", 8],
+    "eslint/max-depth": ["error", 2],
+    "eslint/max-params": ["error", 4],
+    "eslint/max-statements": ["error", 16],
+    "eslint/max-lines-per-function": ["error", 32]
   },
   "overrides": [
     {
-      "files": [
-        "**/*.test.ts",
-        "**/*.spec.ts"
-      ],
+      "files": ["**/*.test.ts", "**/*.spec.ts"],
       "rules": {
         "eslint/complexity": "off",
         "eslint/max-depth": "off",

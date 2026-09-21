@@ -1,11 +1,6 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": [
-    "typescript",
-    "unicorn",
-    "eslint",
-    "oxc"
-  ],
+  "plugins": ["typescript", "unicorn", "eslint", "oxc"],
   "options": {
     "typeAware": true,
     "typeCheck": true
@@ -17,10 +12,7 @@
     "style": "off"
   },
   "rules": {
-    "eslint/one-var": [
-      "error",
-      "never"
-    ],
+    "eslint/one-var": ["error", "never"],
     "eslint/sort-imports": "off",
     "eslint/sort-vars": "off",
     "@typescript-eslint/strict-boolean-expressions": "off",
@@ -28,10 +20,7 @@
   },
   "overrides": [
     {
-      "files": [
-        "**/*.test.ts",
-        "**/*.spec.ts"
-      ],
+      "files": ["**/*.test.ts", "**/*.spec.ts"],
       "rules": {
         "@typescript-eslint/prefer-readonly-parameter-types": "off",
         "typescript/no-unsafe-type-assertion": "off",
@@ -40,7 +29,7 @@
         "typescript/no-unsafe-assignment": "off",
         "unicorn/no-useless-undefined": "off",
         "oxc/approx-constant": "off"
-      },
+      }
     }
   ],
   "env": {

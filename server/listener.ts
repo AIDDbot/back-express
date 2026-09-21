@@ -21,7 +21,10 @@ interface PortConflict {
   processName: string;
 }
 
-const parseWindowsPid = (netstatOutput: Readonly<string>, port: Readonly<number>): number | undefined => {
+const parseWindowsPid = (
+  netstatOutput: Readonly<string>,
+  port: Readonly<number>,
+): number | undefined => {
   const listeningLine = netstatOutput
     .split("\n")
     .find((line) => line.includes(`:${port} `) && line.includes("LISTENING"));
@@ -108,7 +111,11 @@ const handlePortInUse = async (app: Readonly<Express>, port: Readonly<number>): 
   }
   await attemptKillAndRetry(conflict, app, port);
 };
-const onServerError = (app: Readonly<Express>, port: Readonly<number>, error: Readonly<NodeJS.ErrnoException>): void => {
+const onServerError = (
+  app: Readonly<Express>,
+  port: Readonly<number>,
+  error: Readonly<NodeJS.ErrnoException>,
+): void => {
   if (error.code === "EADDRINUSE") {
     void handlePortInUse(app, port);
     return;
