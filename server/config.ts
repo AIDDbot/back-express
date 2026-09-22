@@ -12,3 +12,14 @@ if (envPort) {
 }
 
 export const port = resolvedPort;
+
+export const LOG_LEVELS = ["debug", "info", "warn", "error"] as const;
+export type LogLevel = (typeof LOG_LEVELS)[number];
+
+export const isLogLevel = (value: unknown): value is LogLevel =>
+  LOG_LEVELS.some((level) => level === value);
+
+const envLogLevel = process.env["LOG_LEVEL"]?.trim().toLowerCase();
+
+export const logDir = process.env["LOG_DIR"] ?? "./logs";
+export const logLevel: LogLevel = isLogLevel(envLogLevel) ? envLogLevel : "info";

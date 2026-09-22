@@ -4,6 +4,9 @@ import { createInterface } from "node:readline/promises";
 import { setTimeout as delay } from "node:timers/promises";
 import { promisify } from "node:util";
 import { safeParseInt } from "../shared/type.utils.js";
+import { createLogger } from "./logger.js";
+
+const log = createLogger("listener");
 
 // eslint-disable-next-line @typescript-eslint/strict-void-return
 const execAsync = promisify(execCallback);
@@ -81,7 +84,7 @@ const confirm = async (question: Readonly<string>): Promise<boolean> => {
   return /^y(?<es>es)?$/iu.test(answer.trim());
 };
 const exitForUnknownConflict = (port: Readonly<number>): void => {
-  process.stderr.write(`Port ${port} is already in use. Stop the process using it and retry.\n`);
+  log.error(`Port ${port} is already in use. Stop the process using it and retry.`);
   process.exit(EXIT_FAILURE);
 };
 const confirmRetry = async (pid: Readonly<number>): Promise<void> => {
@@ -95,9 +98,7 @@ const attemptKillAndRetry = async (
   app: Readonly<Express>,
   port: Readonly<number>,
 ): Promise<void> => {
-  process.stderr.write(
-    `Port ${port} is already in use by ${conflict.processName} (PID ${conflict.pid}).\n`,
-  );
+  log.warn(`Port ${port} is already in use by ${conflict.processName} (PID ${conflict.pid}).`);
   await confirmRetry(conflict.pid);
   await killProcess(conflict.pid);
   await delay(RETRY_DELAY_MS);
@@ -120,12 +121,13 @@ const onServerError = (
     void handlePortInUse(app, port);
     return;
   }
-  process.stderr.write(`Failed to start server: ${error.message}\n`);
+  log.error(`Failed to start server: ${error.message}`);
   process.exit(EXIT_FAILURE);
 };
 
 export const listen = (app: Readonly<Express>, port: Readonly<number>): void => {
   const server = app.listen(port, () => {
+    log.info(`Listening on port ${port}`);
     process.stdout.write(`Check server health at http://localhost:${port}/api/health\n`);
   });
 

@@ -31,6 +31,26 @@ bun dev     # runs in watch mode for development
 bun lint    # runs the linter
 ```
 
+## Logging
+
+`server/logger.ts` writes one file per day to `LOG_DIR/yyyy-mm-dd.log` (append only, local time) and echoes each line to the console (`warn`/`error` to stderr).
+
+```text
+14:03:22.481 INFO  [http] GET /api/health 200 3ms
+14:03:25.002 ERROR [errors] boom
+```
+
+```ts
+import { createLogger } from "./server/logger.js";
+const log = createLogger("my-source");
+log.info("something happened");
+```
+
+| Variable    | Default  | Meaning                                         |
+| ----------- | -------- | ----------------------------------------------- |
+| `LOG_DIR`   | `./logs` | Folder for the daily log files                  |
+| `LOG_LEVEL` | `info`   | Minimum level: `debug`, `info`, `warn`, `error` |
+
 ## Code quality checks
 
 During regular coding, `bun run lint` is the only required quality check. It runs the basic linter and provides fast feedback while changes are being developed.

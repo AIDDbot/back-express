@@ -1,0 +1,89 @@
+import { appendFileSync, mkdirSync } from "node:fs";
+import { join } from "node:path";
+import { LOG_LEVELS, type LogLevel, logDir, logLevel } from "./config.js";
+
+export type { LogLevel } from "./config.js";
+
+export interface Logger {
+  debug: (message: string) => void;
+  info: (message: string) => void;
+  warn: (message: string) => void;
+  error: (message: string) => void;
+}
+
+export interface LoggerOptions {
+  dir?: string;
+  level?: LogLevel;
+}
+
+const LEVEL_WIDTH = 5;
+const MONTH_OFFSET = 1;
+
+const pad = (value: number, width = 2): string => String(value).padStart(width, "0");
+
+/** Local date as yyyy-mm-dd; used as the daily file name. */
+export const formatLogDate = (date: Readonly<Date>): string =>
+  `${date.getFullYear()}-${pad(date.getMonth() + MONTH_OFFSET)}-${pad(date.getDate())}`;
+
+const formatLogTime = (date: Readonly<Date>): string =>
+  `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}.${pad(date.getMilliseconds(), 3)}`;
+
+/** One event per line: embedded line breaks are escaped. */
+export const formatLogLine = (
+  date: Readonly<Date>,
+  level: LogLevel,
+  source: string,
+  message: string,
+): string => {
+  const singleLine = message.replaceAll(/\r?\n/gu, String.raw`\n`);
+  return `${formatLogTime(date)} ${level.toUpperCase().padEnd(LEVEL_WIDTH)} [${source}] ${singleLine}`;
+};
+
+const isEnabled = (level: LogLevel, minLevel: LogLevel): boolean =>
+  LOG_LEVELS.indexOf(level) >= LOG_LEVELS.indexOf(minLevel);
+
+const fileFailure = { reported: false };
+
+/** Never throws: a failing file write is reported once and logging continues on the console. */
+const appendToFile = (dir: string, date: Readonly<Date>, line: string): void => {
+  try {
+    mkdirSync(dir, { recursive: true });
+    appendFileSync(join(dir, `${formatLogDate(date)}.log`), `${line}\n`);
+  } catch (error) {
+    if (fileFailure.reported) return;
+    fileFailure.reported = true;
+    const reason = error instanceof Error ? error.message : "Unknown error";
+    process.stderr.write(`Logger could not write to ${dir}: ${reason}\n`);
+  }
+};
+
+const writeToConsole = (level: LogLevel, line: string): void => {
+  const stream = level === "warn" || level === "error" ? process.stderr : process.stdout;
+  stream.write(`${line}\n`);
+};
+
+export const createLogger = (source: string, options: Readonly<LoggerOptions> = {}): Logger => {
+  const dir = options.dir ?? logDir;
+  const minLevel = options.level ?? logLevel;
+  const log = (level: LogLevel, message: string): void => {
+    if (!isEnabled(level, minLevel)) return;
+    const now = new Date();
+    const line = formatLogLine(now, level, source, message);
+    appendToFile(dir, now, line);
+    writeToConsole(level, line);
+  };
+  return {
+    debug: (message) => {
+      log("debug", message);
+    },
+    error: (message) => {
+      log("error", message);
+    },
+    info: (message) => {
+      log("info", message);
+    },
+    warn: (message) => {
+      log("warn", message);
+    },
+  };
+};
