@@ -36,8 +36,8 @@ bun lint    # runs the linter
 `server/logger.ts` writes one file per day to `LOG_DIR/yyyy-mm-dd.log` (append only, local time) and echoes each line to the console (`warn`/`error` to stderr).
 
 ```text
-14:03:22.481 INFO  [http] GET /api/health 200 3ms
-14:03:25.002 ERROR [errors] boom
+14:03:22.481 INFO  [http]       GET /api/health 200 3ms
+14:03:25.002 ERROR [errors]     boom
 ```
 
 ```ts

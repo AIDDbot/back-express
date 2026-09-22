@@ -16,7 +16,12 @@ export interface LoggerOptions {
   level?: LogLevel;
 }
 
-const LEVEL_WIDTH = 5;
+/** Derived from the level names, so renaming one (e.g. "warning") keeps the column aligned. */
+const LEVEL_WIDTH = Math.max(...LOG_LEVELS.map((name) => name.length));
+/** Longer sources are truncated so the message column never moves. */
+const SOURCE_MAX_LENGTH = 10;
+const BRACKETS_LENGTH = 2;
+const SOURCE_WIDTH = SOURCE_MAX_LENGTH + BRACKETS_LENGTH;
 const MONTH_OFFSET = 1;
 
 const pad = (value: number, width = 2): string => String(value).padStart(width, "0");
@@ -28,15 +33,20 @@ export const formatLogDate = (date: Readonly<Date>): string =>
 const formatLogTime = (date: Readonly<Date>): string =>
   `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}.${pad(date.getMilliseconds(), 3)}`;
 
-/** One event per line: embedded line breaks are escaped. */
+/**
+ * One event per line with space-padded columns (time, level, source); the message goes last,
+ * trimmed and with embedded line breaks escaped.
+ */
 export const formatLogLine = (
   date: Readonly<Date>,
   level: LogLevel,
   source: string,
   message: string,
 ): string => {
-  const singleLine = message.replaceAll(/\r?\n/gu, String.raw`\n`);
-  return `${formatLogTime(date)} ${level.toUpperCase().padEnd(LEVEL_WIDTH)} [${source}] ${singleLine}`;
+  const levelColumn = level.toUpperCase().padEnd(LEVEL_WIDTH);
+  const sourceColumn = `[${source.trim().slice(0, SOURCE_MAX_LENGTH)}]`.padEnd(SOURCE_WIDTH);
+  const singleLine = message.trim().replaceAll(/\r?\n/gu, String.raw`\n`);
+  return `${formatLogTime(date)} ${levelColumn} ${sourceColumn} ${singleLine}`;
 };
 
 const isEnabled = (level: LogLevel, minLevel: LogLevel): boolean =>

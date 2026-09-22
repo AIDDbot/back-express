@@ -15,15 +15,44 @@ void describe("logger formatting", () => {
   void it("formats a line with time, padded level, source and message", () => {
     assert.equal(
       formatLogLine(SAMPLE_DATE, "info", "http", "hello"),
-      "07:05:03.009 INFO  [http] hello",
+      "07:05:03.009 INFO  [http]       hello",
     );
-    assert.equal(formatLogLine(SAMPLE_DATE, "error", "db", "down"), "07:05:03.009 ERROR [db] down");
+    assert.equal(
+      formatLogLine(SAMPLE_DATE, "error", "listener", "down"),
+      "07:05:03.009 ERROR [listener]   down",
+    );
+  });
+
+  void it("aligns the message column regardless of level and source length", () => {
+    const lines = [
+      formatLogLine(SAMPLE_DATE, "info", "http", "m"),
+      formatLogLine(SAMPLE_DATE, "error", "errors", "m"),
+      formatLogLine(SAMPLE_DATE, "warn", "0123456789", "m"),
+      formatLogLine(SAMPLE_DATE, "debug", "very-long-source", "m"),
+    ];
+
+    assert.deepEqual(
+      lines.map((line) => line.indexOf(" m")),
+      [31, 31, 31, 31],
+    );
+  });
+
+  void it("trims source and message", () => {
+    const line = formatLogLine(SAMPLE_DATE, "info", "  http ", "  hello  ");
+
+    assert.equal(line, "07:05:03.009 INFO  [http]       hello");
+  });
+
+  void it("truncates a source longer than 10 characters", () => {
+    const line = formatLogLine(SAMPLE_DATE, "info", "very-long-source", "hello");
+
+    assert.equal(line, "07:05:03.009 INFO  [very-long-] hello");
   });
 
   void it("escapes line breaks so each event stays on one line", () => {
     const line = formatLogLine(SAMPLE_DATE, "warn", "x", "a\nb\r\nc");
 
-    assert.equal(line, String.raw`07:05:03.009 WARN  [x] a\nb\nc`);
+    assert.equal(line, String.raw`07:05:03.009 WARN  [x]          a\nb\nc`);
   });
 });
 
@@ -69,8 +98,8 @@ void describe("logger file output", () => {
 
     const lines = readTodayLog();
     assert.equal(lines.length, 2);
-    assert.match(lines[0] ?? "", /^\d{2}:\d{2}:\d{2}\.\d{3} INFO {2}\[test\] first$/u);
-    assert.match(lines[1] ?? "", / DEBUG \[test\] second$/u);
+    assert.match(lines[0] ?? "", /^\d{2}:\d{2}:\d{2}\.\d{3} INFO {2}\[test\] {7}first$/u);
+    assert.match(lines[1] ?? "", / DEBUG \[test\] {7}second$/u);
   });
 
   void it("skips levels below the configured minimum", () => {
