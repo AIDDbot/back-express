@@ -18,7 +18,8 @@ export const requestLogger =
       res.on("finish", () => {
         const duration = Math.round(performance.now() - start);
         const status = res.statusCode;
-        logger[levelForStatus(status)](`${req.method.padEnd(4, " ")} "${req.originalUrl}" ${status} ${duration} ms`);
+        const line = `${status} ${req.method.padEnd(4, " ")} "${req.originalUrl}" ${duration} ms`;
+        logger[levelForStatus(status)](line);
       });
       next();
     };

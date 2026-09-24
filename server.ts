@@ -20,7 +20,11 @@ app.use(requestLogger());
 app.use("/api", apiRouter);
 
 app.use(errorHandler);
-
-startHealthTracking();
-startAuthTracking();
-listen(app, port);
+try {
+  startHealthTracking();
+  startAuthTracking();
+  listen(app, port);
+} catch (error) {
+  createLogger("server").error(error instanceof Error ? error.message : String(error));
+  process.exit(1);
+}

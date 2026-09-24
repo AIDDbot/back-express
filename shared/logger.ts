@@ -1,6 +1,7 @@
 import { appendFileSync, mkdirSync } from "node:fs";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 import { LOG_LEVELS, type LogLevel, logLevel as defaultLogLevel, logDir } from "./config.js";
+
 
 export type { LogLevel } from "./config.js";
 
@@ -20,8 +21,6 @@ export interface LoggerOptions {
 const LEVEL_WIDTH = Math.max(...LOG_LEVELS.map((name) => name.length));
 /** Longer sources are truncated so the message column never moves. */
 const SOURCE_MAX_LENGTH = 10;
-const BRACKETS_LENGTH = 2;
-const SOURCE_WIDTH = SOURCE_MAX_LENGTH + BRACKETS_LENGTH;
 const MONTH_OFFSET = 1;
 
 const pad = (value: number, width = 2): string => String(value).padStart(width, "0");
@@ -44,21 +43,25 @@ export const formatLogLine = (
   message: string,
 ): string => {
   const levelColumn = level.toUpperCase().padEnd(LEVEL_WIDTH);
-  const sourceColumn = `[${source.trim().slice(0, SOURCE_MAX_LENGTH)}]`.padEnd(SOURCE_WIDTH);
+  const sourceColumn = `${source.trim().slice(0, SOURCE_MAX_LENGTH).padEnd(SOURCE_MAX_LENGTH)}`;
   const singleLine = message.trim().replaceAll(/\r?\n/gu, String.raw`\n`);
-  return `${formatLogTime(date)} ${levelColumn} ${sourceColumn} ${singleLine}`;
+  return `${formatLogTime(date)} ${sourceColumn} ${levelColumn} ${singleLine}`;
 };
 
 const isEnabled = (level: LogLevel, minLevel: LogLevel): boolean =>
   LOG_LEVELS.indexOf(level) >= LOG_LEVELS.indexOf(minLevel);
 
 const fileFailure = { reported: false };
+const readyDirectories = new Set<string>();
 
 /** Never throws: a failing file write is reported once and logging continues on the console. */
-const appendToFile = (dir: string, date: Readonly<Date>, line: string): void => {
+const appendToFile = (dir: string, filePath: string, line: string): void => {
   try {
-    mkdirSync(dir, { recursive: true });
-    appendFileSync(join(dir, `${formatLogDate(date)}.log`), `${line}\n`);
+    if (!readyDirectories.has(dir)) {
+      mkdirSync(dir, { recursive: true });
+      readyDirectories.add(dir);
+    }
+    appendFileSync(filePath, `${line}\n`);
   } catch (error) {
     if (fileFailure.reported) return;
     fileFailure.reported = true;
@@ -73,13 +76,20 @@ const writeToConsole = (level: LogLevel, line: string): void => {
 };
 
 export const createLogger = (source: string, options: Readonly<LoggerOptions> = {}): Logger => {
-  const dir = options.dir ?? logDir;
+  const dir = resolve(options.dir ?? logDir);
   const minLevel = options.level ?? defaultLogLevel;
+  let fileDate = "";
+  let filePath = "";
   const log = (level: LogLevel, message: string): void => {
     if (!isEnabled(level, minLevel)) return;
     const now = new Date();
+    const currentFileDate = formatLogDate(now);
+    if (currentFileDate !== fileDate) {
+      fileDate = currentFileDate;
+      filePath = join(dir, `${fileDate}.log`);
+    }
     const line = formatLogLine(now, level, source, message);
-    appendToFile(dir, now, line);
+    appendToFile(dir, filePath, line);
     writeToConsole(level, line);
   };
   return {
