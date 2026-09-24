@@ -33,7 +33,7 @@ bun lint    # runs the linter
 
 ## Logging
 
-`server/logger.ts` writes one file per day to `LOG_DIR/yyyy-mm-dd.log` (append only, local time) and echoes each line to the console (`warn`/`error` to stderr).
+`shared/logger.ts` writes one file per day to `LOG_DIR/yyyy-mm-dd.log` (append only, local time) and echoes each line to the console (`warn`/`error` to stderr).
 
 ```text
 14:03:22.481 INFO  [http]       GET /api/health 200 3ms
@@ -41,7 +41,7 @@ bun lint    # runs the linter
 ```
 
 ```ts
-import { createLogger } from "./server/logger.js";
+import { createLogger } from "./shared/logger.js";
 const log = createLogger("my-source");
 log.info("something happened");
 ```

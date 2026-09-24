@@ -1,8 +1,8 @@
+import express from "express";
 import { strict as assert } from "node:assert";
 import type { AddressInfo } from "node:net";
 import { describe, it } from "node:test";
-import express from "express";
-import type { Logger } from "./logger.js";
+import type { Logger } from "../shared/logger.js";
 import { requestLogger } from "./request-logger.js";
 
 interface Entry {
@@ -55,14 +55,14 @@ void describe("request logger", () => {
 
     assert.equal(entries.length, 1);
     assert.equal(entries[0]?.level, "info");
-    assert.match(entries[0]?.message ?? "", /^GET \/ok\?x=1 200 \d+ms$/u);
+    assert.match(entries[0]?.message ?? "", /^GET {2}"\/ok\?x=1" 200 \d+ ms$/u);
   });
 
   void it("logs client errors as warn", async () => {
     const entries = await requestStatus("/missing");
 
     assert.equal(entries[0]?.level, "warn");
-    assert.match(entries[0]?.message ?? "", /^GET \/missing 404 /u);
+    assert.match(entries[0]?.message ?? "", /^GET {2}"\/missing" 404 /u);
   });
 
   void it("logs server errors as error", async () => {

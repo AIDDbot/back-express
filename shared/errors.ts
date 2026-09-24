@@ -1,8 +1,16 @@
 import type { NextFunction, Request, Response } from "express";
 import { coerceToFiniteNumber } from "../shared/type.utils.js";
-import { createLogger } from "./logger.js";
+import type { Logger } from "./logger.js";
 
-const log = createLogger("errors");
+let log: Logger | null = null;
+
+/**
+ * Set the logger instance for error handling.
+ * Must be called before any errors are handled.
+ */
+export const setErrorsLogger = (logger: Logger): void => {
+  log = logger;
+};
 
 export class ApiError extends Error {
   public readonly status: number;
@@ -55,7 +63,7 @@ const handleClientError = (err: Readonly<unknown>, res: Readonly<Response>): boo
 
 const handleServerError = (err: Readonly<unknown>, res: Readonly<Response>): void => {
   const errorMessage = err instanceof Error ? err.message : "Unknown error";
-  log.error(errorMessage);
+  log?.error(errorMessage);
   res.status(SERVER_ERROR_MIN).json({ error: "Internal server error" });
 };
 

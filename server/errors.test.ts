@@ -1,8 +1,10 @@
-import { strict as assert } from "node:assert";
-import { afterEach, describe, it, mock } from "node:test";
-import type { AddressInfo } from "node:net";
 import express, { type Response } from "express";
-import { ApiError, errorHandler } from "./errors.js";
+import { strict as assert } from "node:assert";
+import { mkdirSync } from "node:fs";
+import type { AddressInfo } from "node:net";
+import { afterEach, beforeEach, describe, it, mock } from "node:test";
+import { ApiError, errorHandler, setErrorsLogger } from "../shared/errors.js";
+import { createLogger } from "../shared/logger.js";
 
 interface ErrorResponse {
   body?: unknown;
@@ -21,34 +23,25 @@ const handle = (error: unknown): ErrorResponse => {
     },
   };
 
-  errorHandler(error as never, {} as never, res as unknown as Response, (() => {}) as never);
+  errorHandler(error as never, {} as never, res as unknown as Response, (() => { }) as never);
   return response;
 };
 
-void describe("error handler", () => {
-  afterEach(() => {
-    mock.restoreAll();
-  });
+const initTestLogger = (): void => {
+  // Initialize logger for tests with test config
+  const testLogDir = "./logs/test";
+  mkdirSync(testLogDir, { recursive: true });
+  setErrorsLogger(createLogger("errors", { dir: testLogDir, level: "error" }));
+};
+
+void describe("error handler — ApiError and client errors", () => {
+  beforeEach(initTestLogger);
 
   void it("preserves an ApiError status and message", () => {
     const response = handle(new ApiError(401, "Authentication required"));
 
     assert.equal(response.status, 401);
     assert.deepEqual(response.body, { error: "Authentication required" });
-  });
-
-  void it("reports and logs an unexpected Error as a server error", () => {
-    const writes: string[] = [];
-    mock.method(process.stderr, "write", (chunk: string | Uint8Array) => {
-      writes.push(chunk.toString());
-      return true;
-    });
-
-    const response = handle(new Error("boom"));
-
-    assert.equal(response.status, 500);
-    assert.deepEqual(response.body, { error: "Internal server error" });
-    assert.ok(writes.some((line) => line.includes("boom")));
   });
 
   void it("exposes an opted-in client-error message", () => {
@@ -64,6 +57,28 @@ void describe("error handler", () => {
     assert.equal(response.status, 400);
     assert.deepEqual(response.body, { error: "Bad request" });
     assert.ok(!JSON.stringify(response.body).includes("secret detail"));
+  });
+});
+
+void describe("error handler — server errors", () => {
+  beforeEach(initTestLogger);
+
+  afterEach(() => {
+    mock.restoreAll();
+  });
+
+  void it("reports and logs an unexpected Error as a server error", () => {
+    const writes: string[] = [];
+    mock.method(process.stderr, "write", (chunk: string | Uint8Array) => {
+      writes.push(chunk.toString());
+      return true;
+    });
+
+    const response = handle(new Error("boom"));
+
+    assert.equal(response.status, 500);
+    assert.deepEqual(response.body, { error: "Internal server error" });
+    assert.ok(writes.some((line) => line.includes("boom")));
   });
 
   void it("reports a non-object throw as a server error", () => {

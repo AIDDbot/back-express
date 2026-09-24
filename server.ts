@@ -1,11 +1,16 @@
-import { apiRouter } from "./api/api.js";
 import cors from "cors";
-import { errorHandler } from "./server/errors.js";
 import express from "express";
-import { listen } from "./server/listener.js";
-import { port } from "./server/config.js";
-import { requestLogger } from "./server/request-logger.js";
+import { apiRouter } from "./api/api.js";
+import { startAuthTracking } from "./api/auth/auth.service.js";
 import { startHealthTracking } from "./api/health/health.service.js";
+import { listen } from "./server/listener.js";
+import { requestLogger } from "./server/request-logger.js";
+import { port } from "./shared/config.js";
+import { errorHandler, setErrorsLogger } from "./shared/errors.js";
+import { createLogger } from "./shared/logger.js";
+
+// Inject logger into error handler
+setErrorsLogger(createLogger("api"));
 
 const app = express();
 app.use(cors());
@@ -17,4 +22,5 @@ app.use("/api", apiRouter);
 app.use(errorHandler);
 
 startHealthTracking();
+startAuthTracking();
 listen(app, port);

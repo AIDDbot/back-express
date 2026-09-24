@@ -1,8 +1,14 @@
+import { clamp, safeParseInt } from "./type.utils.js";
+
 const DEFAULT_PORT = 3000;
 
 export const dbPath = process.env["DB_PATH"] ?? "./data/demo.db";
 
-import { clamp, safeParseInt } from "../shared/type.utils.js";
+export const LOG_LEVELS = ["debug", "info", "warn", "error"] as const;
+export type LogLevel = (typeof LOG_LEVELS)[number];
+
+export const isLogLevel = (value: unknown): value is LogLevel =>
+  LOG_LEVELS.some((level) => level === value);
 
 const envPort = process.env["PORT"];
 let resolvedPort = DEFAULT_PORT;
@@ -12,12 +18,6 @@ if (envPort) {
 }
 
 export const port = resolvedPort;
-
-export const LOG_LEVELS = ["debug", "info", "warn", "error"] as const;
-export type LogLevel = (typeof LOG_LEVELS)[number];
-
-export const isLogLevel = (value: unknown): value is LogLevel =>
-  LOG_LEVELS.some((level) => level === value);
 
 const envLogLevel = process.env["LOG_LEVEL"]?.trim().toLowerCase();
 

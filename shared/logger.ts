@@ -1,6 +1,6 @@
 import { appendFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
-import { LOG_LEVELS, type LogLevel, logDir, logLevel } from "./config.js";
+import { LOG_LEVELS, type LogLevel, logLevel as defaultLogLevel, logDir } from "./config.js";
 
 export type { LogLevel } from "./config.js";
 
@@ -74,7 +74,7 @@ const writeToConsole = (level: LogLevel, line: string): void => {
 
 export const createLogger = (source: string, options: Readonly<LoggerOptions> = {}): Logger => {
   const dir = options.dir ?? logDir;
-  const minLevel = options.level ?? logLevel;
+  const minLevel = options.level ?? defaultLogLevel;
   const log = (level: LogLevel, message: string): void => {
     if (!isEnabled(level, minLevel)) return;
     const now = new Date();

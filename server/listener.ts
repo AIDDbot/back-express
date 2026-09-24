@@ -3,8 +3,8 @@ import { exec as execCallback } from "node:child_process";
 import { createInterface } from "node:readline/promises";
 import { setTimeout as delay } from "node:timers/promises";
 import { promisify } from "node:util";
+import { createLogger } from "../shared/logger.js";
 import { safeParseInt } from "../shared/type.utils.js";
-import { createLogger } from "./logger.js";
 
 const log = createLogger("listener");
 
