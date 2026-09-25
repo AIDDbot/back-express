@@ -3,6 +3,7 @@ import { exec as execCallback } from "node:child_process";
 import { createInterface } from "node:readline/promises";
 import { setTimeout as delay } from "node:timers/promises";
 import { promisify } from "node:util";
+import { API_BASE_PATH, HOST } from "../shared/config.js";
 import { createLogger } from "../shared/logger.js";
 import { safeParseInt } from "../shared/type.utils.js";
 
@@ -125,11 +126,21 @@ const onServerError = (
   process.exit(EXIT_FAILURE);
 };
 
+/** Address shown in the startup hint. Wildcard binds are reached via localhost. */
+const advertisedHost = (bindHost: string | undefined): string => {
+  if (bindHost === undefined || bindHost === "0.0.0.0" || bindHost === "::") return "localhost";
+  if (bindHost.includes(":") && !bindHost.startsWith("[")) return `[${bindHost}]`;
+  return bindHost;
+};
+
 export const listen = (app: Readonly<Express>, port: Readonly<number>): void => {
-  const server = app.listen(port, () => {
+  const onListening = (): void => {
     log.info(`Listening on port ${port}`);
-    process.stdout.write(`Check server health at http://localhost:${port}/api/health\n`);
-  });
+    const healthUrl = `http://${advertisedHost(HOST)}:${port}${API_BASE_PATH}/health`;
+    process.stdout.write(`Check server health at ${healthUrl}\n`);
+  };
+  const server =
+    HOST === undefined ? app.listen(port, onListening) : app.listen(port, HOST, onListening);
 
   server.on("error", (error: NodeJS.ErrnoException) => {
     onServerError(app, port, error);

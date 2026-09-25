@@ -13,13 +13,13 @@ const levelForStatus = (status: number): LogLevel => {
 /** Logs one line per request once the response has been sent. */
 export const requestLogger =
   (logger: Readonly<Logger> = createLogger("http")): RequestHandler =>
-    (req: Readonly<Request>, res: Readonly<Response>, next: NextFunction): void => {
-      const start = performance.now();
-      res.on("finish", () => {
-        const duration = Math.round(performance.now() - start);
-        const status = res.statusCode;
-        const line = `${status} ${req.method.padEnd(4, " ")} "${req.originalUrl}" ${duration} ms`;
-        logger[levelForStatus(status)](line);
-      });
-      next();
-    };
+  (req: Readonly<Request>, res: Readonly<Response>, next: NextFunction): void => {
+    const start = performance.now();
+    res.on("finish", () => {
+      const duration = Math.round(performance.now() - start);
+      const status = res.statusCode;
+      const line = `${status} ${req.method.padEnd(4, " ")} "${req.originalUrl}" ${duration} ms`;
+      logger[levelForStatus(status)](line);
+    });
+    next();
+  };

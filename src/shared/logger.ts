@@ -1,7 +1,6 @@
 import { appendFileSync, mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { LOG_LEVELS, type LogLevel, logLevel as defaultLogLevel, logDir } from "./config.js";
-
+import { LOG_DIR, LOG_LEVEL, LOG_LEVELS, type LogLevel } from "./config.js";
 
 export type { LogLevel } from "./config.js";
 
@@ -33,7 +32,7 @@ const formatLogTime = (date: Readonly<Date>): string =>
   `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}.${pad(date.getMilliseconds(), 3)}`;
 
 /**
- * One event per line with space-padded columns (time, level, source); the message goes last,
+ * One event per line with space-padded columns (time, source, level); the message goes last,
  * trimmed and with embedded line breaks escaped.
  */
 export const formatLogLine = (
@@ -76,8 +75,8 @@ const writeToConsole = (level: LogLevel, line: string): void => {
 };
 
 export const createLogger = (source: string, options: Readonly<LoggerOptions> = {}): Logger => {
-  const dir = resolve(options.dir ?? logDir);
-  const minLevel = options.level ?? defaultLogLevel;
+  const dir = resolve(options.dir ?? LOG_DIR);
+  const minLevel = options.level ?? LOG_LEVEL;
   let fileDate = "";
   let filePath = "";
   const log = (level: LogLevel, message: string): void => {

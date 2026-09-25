@@ -31,9 +31,23 @@ bun dev     # runs in watch mode for development
 bun lint    # runs the linter
 ```
 
+## Configuration
+
+Runtime settings live in `src/shared/config.ts`. Values that change per machine come from the environment (see `.env.example`). The API mount path is `/api` and is not an environment variable.
+
+| Variable             | Default          | Meaning                                                     |
+| -------------------- | ---------------- | ----------------------------------------------------------- |
+| `PORT`               | `3000`           | Port the server listens on                                  |
+| `HOST`               | unset            | Bind address. Unset listens on all interfaces               |
+| `DB_PATH`            | `./data/demo.db` | SQLite database file                                        |
+| `DB_BUSY_TIMEOUT_MS` | `5000`           | How long SQLite waits on a locked database, in milliseconds |
+| `LOG_DIR`            | `./logs`         | Folder for the daily log files                              |
+| `LOG_LEVEL`          | `info`           | Minimum level: `debug`, `info`, `warn`, `error`             |
+| `CORS_ORIGIN`        | `*`              | Allowed browser origin, or a comma-separated list           |
+
 ## Logging
 
-`shared/logger.ts` writes one file per day to `LOG_DIR/yyyy-mm-dd.log` (append only, local time) and echoes each line to the console (`warn`/`error` to stderr).
+`src/shared/logger.ts` writes one file per day to `LOG_DIR/yyyy-mm-dd.log` (append only, local time) and echoes each line to the console (`warn`/`error` to stderr).
 
 ```text
 14:03:22.481 INFO  [http]       GET /api/health 200 3ms
@@ -41,15 +55,10 @@ bun lint    # runs the linter
 ```
 
 ```ts
-import { createLogger } from "./shared/logger.js";
+import { createLogger } from "./src/shared/logger.js";
 const log = createLogger("my-source");
 log.info("something happened");
 ```
-
-| Variable    | Default  | Meaning                                         |
-| ----------- | -------- | ----------------------------------------------- |
-| `LOG_DIR`   | `./logs` | Folder for the daily log files                  |
-| `LOG_LEVEL` | `info`   | Minimum level: `debug`, `info`, `warn`, `error` |
 
 ## Code quality checks
 

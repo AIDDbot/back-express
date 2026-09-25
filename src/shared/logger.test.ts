@@ -12,14 +12,14 @@ void describe("logger formatting", () => {
     assert.equal(formatLogDate(SAMPLE_DATE), "2026-09-02");
   });
 
-  void it("formats a line with time, padded level, source and message", () => {
+  void it("formats a line with time, source, padded level and message", () => {
     assert.equal(
       formatLogLine(SAMPLE_DATE, "info", "http", "hello"),
-      "07:05:03.009 INFO  [http]       hello",
+      "07:05:03.009 http       INFO  hello",
     );
     assert.equal(
       formatLogLine(SAMPLE_DATE, "error", "listener", "down"),
-      "07:05:03.009 ERROR [listener]   down",
+      "07:05:03.009 listener   ERROR down",
     );
   });
 
@@ -33,26 +33,26 @@ void describe("logger formatting", () => {
 
     assert.deepEqual(
       lines.map((line) => line.indexOf(" m")),
-      [31, 31, 31, 31],
+      [29, 29, 29, 29],
     );
   });
 
   void it("trims source and message", () => {
     const line = formatLogLine(SAMPLE_DATE, "info", "  http ", "  hello  ");
 
-    assert.equal(line, "07:05:03.009 INFO  [http]       hello");
+    assert.equal(line, "07:05:03.009 http       INFO  hello");
   });
 
   void it("truncates a source longer than 10 characters", () => {
     const line = formatLogLine(SAMPLE_DATE, "info", "very-long-source", "hello");
 
-    assert.equal(line, "07:05:03.009 INFO  [very-long-] hello");
+    assert.equal(line, "07:05:03.009 very-long- INFO  hello");
   });
 
   void it("escapes line breaks so each event stays on one line", () => {
     const line = formatLogLine(SAMPLE_DATE, "warn", "x", "a\nb\r\nc");
 
-    assert.equal(line, String.raw`07:05:03.009 WARN  [x]          a\nb\nc`);
+    assert.equal(line, String.raw`07:05:03.009 x          WARN  a\nb\nc`);
   });
 });
 
@@ -98,8 +98,8 @@ void describe("logger file output", () => {
 
     const lines = readTodayLog();
     assert.equal(lines.length, 2);
-    assert.match(lines[0] ?? "", /^\d{2}:\d{2}:\d{2}\.\d{3} INFO {2}\[test\] {7}first$/u);
-    assert.match(lines[1] ?? "", / DEBUG \[test\] {7}second$/u);
+    assert.match(lines[0] ?? "", /^\d{2}:\d{2}:\d{2}\.\d{3} test {7}INFO {2}first$/u);
+    assert.match(lines[1] ?? "", / test {7}DEBUG second$/u);
   });
 
   void it("skips levels below the configured minimum", () => {
@@ -111,7 +111,7 @@ void describe("logger file output", () => {
     log.error("shown");
 
     assert.deepEqual(
-      readTodayLog().map((line) => line.slice(13, 18)),
+      readTodayLog().map((line) => line.slice(24, 29)),
       ["WARN ", "ERROR"],
     );
   });

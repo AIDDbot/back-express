@@ -23,7 +23,7 @@ const handle = (error: unknown): ErrorResponse => {
     },
   };
 
-  errorHandler(error as never, {} as never, res as unknown as Response, (() => { }) as never);
+  errorHandler(error as never, {} as never, res as unknown as Response, (() => {}) as never);
   return response;
 };
 
