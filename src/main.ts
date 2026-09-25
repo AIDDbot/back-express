@@ -1,13 +1,13 @@
 import cors from "cors";
 import express from "express";
-import { apiRouter } from "./src/api/api.js";
-import { startAuthTracking } from "./src/api/auth/auth.service.js";
-import { startHealthTracking } from "./src/api/health/health.service.js";
-import { listen } from "./src/server/listener.js";
-import { requestLogger } from "./src/server/request-logger.js";
-import { API_BASE_PATH, CORS_ORIGIN, PORT } from "./src/shared/config.js";
-import { errorHandler, setErrorsLogger } from "./src/shared/errors.js";
-import { createLogger } from "./src/shared/logger.js";
+import { apiRouter } from "./api/api.js";
+import { startAuthTracking } from "./api/auth/auth.service.js";
+import { startHealthTracking } from "./api/health/health.service.js";
+import { listen } from "./server/listener.js";
+import { requestLogger } from "./server/request-logger.js";
+import { API_BASE_PATH, CORS_ORIGIN, PORT } from "./shared/config.js";
+import { errorHandler, setErrorsLogger } from "./shared/errors.js";
+import { createLogger } from "./shared/logger.js";
 
 // Inject logger into error handler
 setErrorsLogger(createLogger("api"));
