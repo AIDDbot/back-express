@@ -1,4 +1,4 @@
-import { mkdirSync } from "node:fs";
+import { existsSync, mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { DB_BUSY_TIMEOUT_MS, DB_PATH } from "../shared/config.js";
@@ -10,8 +10,18 @@ export const getDb = (): DatabaseSync => {
   let db = databaseConnectionCache.current;
   if (db) return db;
   const logger = createLogger("db");
+  logger.info(`File path: "${DB_PATH}"`);
+  if (!existsSync(DB_PATH)) {
+    logger.warn(`Database file not found. A new one will be created.`);
+  }
   mkdirSync(dirname(DB_PATH), { recursive: true });
-  db = new DatabaseSync(DB_PATH);
+  try {
+    db = new DatabaseSync(DB_PATH);
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error);
+    logger.error(`Connection failed: ${reason}`);
+    throw error;
+  }
   databaseConnectionCache.current = db;
   /*
    * WAL lets readers and writers overlap; busy_timeout makes concurrent writers
@@ -20,6 +30,6 @@ export const getDb = (): DatabaseSync => {
    */
   db.exec("PRAGMA journal_mode = WAL;");
   db.exec(`PRAGMA busy_timeout = ${DB_BUSY_TIMEOUT_MS};`);
-  logger.info(`Database connection opened at "${DB_PATH}"`);
+  logger.info(`Database opened.`);
   return db;
 };

@@ -1,6 +1,6 @@
-import { ApiError } from "../../shared/errors.js";
 import type { StatementResultingChanges } from "node:sqlite";
-import { getDb } from "../../server/db.js";
+import { getDb } from "../../core/db.js";
+import { ApiError } from "../../shared/errors.js";
 import { isRecord } from "../../shared/guard.utils.js";
 
 /** Internal row shape; includes the password hash, never exposed on the wire. */

@@ -1,4 +1,11 @@
+import { isAbsolute, resolve } from "node:path";
 import { clamp, safeParseInt } from "./type.utils.js";
+
+/** `src/shared` → repository root, so relative paths ignore the process cwd. */
+const PROJECT_ROOT = resolve(import.meta.dirname, "../..");
+
+const resolveSettingPath = (value: string): string =>
+  isAbsolute(value) ? value : resolve(PROJECT_ROOT, value);
 
 const DEFAULT_PORT = 3000;
 const MIN_PORT = 0;
@@ -47,10 +54,10 @@ const SETTINGS = Object.freeze({
     0,
     MAX_DB_BUSY_TIMEOUT_MS,
   ),
-  DB_PATH: process.env["DB_PATH"] ?? "./data/demo.db",
+  DB_PATH: resolveSettingPath(process.env["DB_PATH"] ?? "./data/demo.db"),
   /** Bind address. Unset keeps Node's default, which listens on all interfaces. */
   HOST: process.env["HOST"]?.trim() || undefined,
-  LOG_DIR: process.env["LOG_DIR"] ?? "./logs",
+  LOG_DIR: resolveSettingPath(process.env["LOG_DIR"] ?? "./logs"),
   LOG_LEVEL: isLogLevel(envLogLevel) ? envLogLevel : DEFAULT_LOG_LEVEL,
   PORT: readClampedInt(process.env["PORT"], DEFAULT_PORT, MIN_PORT, MAX_PORT),
 } as const);

@@ -39,9 +39,9 @@ Runtime settings live in `src/shared/config.ts`. Values that change per machine 
 | -------------------- | ---------------- | ----------------------------------------------------------- |
 | `PORT`               | `3000`           | Port the server listens on                                  |
 | `HOST`               | unset            | Bind address. Unset listens on all interfaces               |
-| `DB_PATH`            | `./data/demo.db` | SQLite database file                                        |
+| `DB_PATH`            | `./data/demo.db` | SQLite database file. Relative paths start at the project root |
 | `DB_BUSY_TIMEOUT_MS` | `5000`           | How long SQLite waits on a locked database, in milliseconds |
-| `LOG_DIR`            | `./logs`         | Folder for the daily log files                              |
+| `LOG_DIR`            | `./logs`         | Folder for the daily log files. Relative paths start at the project root |
 | `LOG_LEVEL`          | `info`           | Minimum level: `debug`, `info`, `warn`, `error`             |
 | `CORS_ORIGIN`        | `*`              | Allowed browser origin, or a comma-separated list           |
 
