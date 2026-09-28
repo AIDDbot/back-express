@@ -3,6 +3,7 @@ import { isNonEmptyString, isRecord } from "../../shared/guard.utils.js";
 import { createLogger } from "../../shared/logger.js";
 import {
   findUserByEmail,
+  findUserBySessionToken,
   initAuthRepository,
   insertSession,
   insertUser,
@@ -17,6 +18,7 @@ import {
 } from "./auth.types.js";
 
 const INVALID_CREDENTIALS = "Invalid credentials";
+const INVALID_SESSION = "Invalid session";
 const USER_ROLE = "user";
 const log = createLogger("auth");
 
@@ -100,4 +102,11 @@ export const loginUser = async (body: unknown): Promise<Session> => {
   insertSession({ token, userId: record.id });
   log.info(`User logged in: ${record.id}`);
   return { token, user: toPublicUser(record) };
+};
+
+/** Resolves a session token to its public user; unknown tokens are a 401. */
+export const findSessionUser = (token: string): User => {
+  const record = findUserBySessionToken(token);
+  if (!record) throw new ApiError(401, INVALID_SESSION);
+  return toPublicUser(record);
 };

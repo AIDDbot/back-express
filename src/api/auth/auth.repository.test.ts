@@ -2,6 +2,7 @@ import assert from "node:assert";
 import { describe, it } from "node:test";
 import {
   findUserByEmail,
+  findUserBySessionToken,
   initAuthRepository,
   insertSession,
   insertUser,
@@ -49,6 +50,22 @@ void describe("auth repository", () => {
     assert.doesNotThrow(() => {
       insertSession({ token: crypto.randomUUID(), userId: user.id });
     });
+  });
+});
+
+void describe("auth repository - session lookup", () => {
+  void it("findUserBySessionToken returns the session owner, or undefined for an unknown token", () => {
+    const user = insertUser({
+      email: uniqueEmail("by-token"),
+      name: "Ada",
+      passwordHash: "hash",
+      role: "user",
+    });
+    const token = crypto.randomUUID();
+    insertSession({ token, userId: user.id });
+
+    assert.deepStrictEqual(findUserBySessionToken(token), user);
+    assert.strictEqual(findUserBySessionToken(crypto.randomUUID()), undefined);
   });
 });
 

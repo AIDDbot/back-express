@@ -55,13 +55,27 @@ export const initAuthRepository = (): void => {
   `);
 };
 
-export const findUserByEmail = (email: string): UserRecord | undefined => {
-  const SELECT =
-    "SELECT id, email, name, password_hash, role, created_at FROM users WHERE email = ?";
+/** Runs a single-row users query; the only place a raw row is cast to `UserRow`. */
+const selectUser = (sql: string, param: string): UserRecord | undefined => {
   // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-  const row = getDb().prepare(SELECT).get(email) as UserRow | undefined;
+  const row = getDb().prepare(sql).get(param) as UserRow | undefined;
   return row ? toUserRecord(row) : undefined;
 };
+
+export const findUserByEmail = (email: string): UserRecord | undefined =>
+  selectUser(
+    "SELECT id, email, name, password_hash, role, created_at FROM users WHERE email = ?",
+    email,
+  );
+
+/** The user owning the session `token`, or undefined when no such session exists. */
+export const findUserBySessionToken = (token: string): UserRecord | undefined =>
+  selectUser(
+    `SELECT u.id, u.email, u.name, u.password_hash, u.role, u.created_at
+       FROM sessions s JOIN users u ON u.id = s.user_id
+      WHERE s.token = ?`,
+    token,
+  );
 
 export interface InsertUserParams {
   email: string;
