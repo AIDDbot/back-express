@@ -55,11 +55,20 @@ export const initAuthRepository = (): void => {
   `);
 };
 
-/** Runs a single-row users query; the only place a raw row is cast to `UserRow`. */
+const USER_TEXT_COLUMNS = ["email", "name", "password_hash", "role", "created_at"] as const;
+
+/** Narrows a raw SQLite row to `UserRow` at runtime instead of asserting its type. */
+const isUserRow = (row: unknown): row is UserRow =>
+  isRecord(row) &&
+  typeof row["id"] === "number" &&
+  USER_TEXT_COLUMNS.every((column) => typeof row[column] === "string");
+
+/** Runs a single-row users query; a row that does not match `UserRow` is a server error. */
 const selectUser = (sql: string, param: string): UserRecord | undefined => {
-  // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-  const row = getDb().prepare(sql).get(param) as UserRow | undefined;
-  return row ? toUserRecord(row) : undefined;
+  const row = getDb().prepare(sql).get(param);
+  if (row === undefined) return undefined;
+  if (!isUserRow(row)) throw new Error("Unexpected users row shape");
+  return toUserRecord(row);
 };
 
 export const findUserByEmail = (email: string): UserRecord | undefined =>
