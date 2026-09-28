@@ -42,7 +42,7 @@ export const formatLogLine = (
   message: string,
 ): string => {
   const levelColumn = level.toUpperCase().padEnd(LEVEL_WIDTH);
-  const sourceColumn = `${source.trim().slice(0, SOURCE_MAX_LENGTH).padEnd(SOURCE_MAX_LENGTH)}`;
+  const sourceColumn = source.trim().slice(0, SOURCE_MAX_LENGTH).padEnd(SOURCE_MAX_LENGTH);
   const singleLine = message.trim().replaceAll(/\r?\n/gu, String.raw`\n`);
   return `${formatLogTime(date)} ${sourceColumn} ${levelColumn} ${singleLine}`;
 };

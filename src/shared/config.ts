@@ -28,7 +28,8 @@ const readClampedInt = (
   max: number,
 ): number => clamp(safeParseInt(raw, fallback), min, max);
 
-const parseCorsOrigin = (raw: string | undefined): string | readonly string[] => {
+/** Unset or blank yields `*`; one origin stays a string; several become a frozen list. */
+export const parseCorsOrigin = (raw: string | undefined): string | readonly string[] => {
   const value = raw?.trim();
   if (!value) return DEFAULT_CORS_ORIGIN;
   const origins = Object.freeze(
@@ -40,6 +41,12 @@ const parseCorsOrigin = (raw: string | undefined): string | readonly string[] =>
   if (origins.length === 0) return DEFAULT_CORS_ORIGIN;
   if (origins.length === 1) return origins[0] ?? DEFAULT_CORS_ORIGIN;
   return origins;
+};
+
+/** Unset or whitespace-only yields undefined, so the listener keeps Node's default bind address. */
+export const parseHost = (raw: string | undefined): string | undefined => {
+  const value = raw?.trim();
+  return value === undefined || value === "" ? undefined : value;
 };
 
 const envLogLevel = process.env["LOG_LEVEL"]?.trim().toLowerCase();
@@ -56,7 +63,7 @@ const SETTINGS = Object.freeze({
   ),
   DB_PATH: resolveSettingPath(process.env["DB_PATH"] ?? "./data/demo.db"),
   /** Bind address. Unset keeps Node's default, which listens on all interfaces. */
-  HOST: process.env["HOST"]?.trim() || undefined,
+  HOST: parseHost(process.env["HOST"]),
   LOG_DIR: resolveSettingPath(process.env["LOG_DIR"] ?? "./logs"),
   LOG_LEVEL: isLogLevel(envLogLevel) ? envLogLevel : DEFAULT_LOG_LEVEL,
   PORT: readClampedInt(process.env["PORT"], DEFAULT_PORT, MIN_PORT, MAX_PORT),
