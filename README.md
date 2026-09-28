@@ -35,15 +35,57 @@ bun lint    # runs the linter
 
 Runtime settings live in `src/shared/config.ts`. Values that change per machine come from the environment (see `.env.example`). The API mount path is `/api` and is not an environment variable.
 
-| Variable             | Default          | Meaning                                                     |
-| -------------------- | ---------------- | ----------------------------------------------------------- |
-| `PORT`               | `3000`           | Port the server listens on                                  |
-| `HOST`               | unset            | Bind address. Unset listens on all interfaces               |
-| `DB_PATH`            | `./data/demo.db` | SQLite database file. Relative paths start at the project root |
-| `DB_BUSY_TIMEOUT_MS` | `5000`           | How long SQLite waits on a locked database, in milliseconds |
+| Variable             | Default          | Meaning                                                                  |
+| -------------------- | ---------------- | ------------------------------------------------------------------------ |
+| `PORT`               | `3000`           | Port the server listens on                                               |
+| `HOST`               | unset            | Bind address. Unset listens on all interfaces                            |
+| `DB_PATH`            | `./data/demo.db` | SQLite database file. Relative paths start at the project root           |
+| `DB_BUSY_TIMEOUT_MS` | `5000`           | How long SQLite waits on a locked database, in milliseconds              |
 | `LOG_DIR`            | `./logs`         | Folder for the daily log files. Relative paths start at the project root |
-| `LOG_LEVEL`          | `info`           | Minimum level: `debug`, `info`, `warn`, `error`             |
-| `CORS_ORIGIN`        | `*`              | Allowed browser origin, or a comma-separated list           |
+| `LOG_LEVEL`          | `info`           | Minimum level: `debug`, `info`, `warn`, `error`                          |
+| `CORS_ORIGIN`        | `*`              | Allowed browser origin, or a comma-separated list                        |
+
+## API
+
+Every route is mounted under `/api` (see `src/api/api.ts`). Errors always answer `{ "error": "..." }` with the proper status code.
+
+| Method | Path                 | Auth    | Result                                  |
+| ------ | -------------------- | ------- | --------------------------------------- |
+| `GET`  | `/api/health`        | public  | Uptime and run count                    |
+| `POST` | `/api/auth/register` | public  | `201` with the public user              |
+| `POST` | `/api/auth/login`    | public  | `{ token, user }`; stores a session row |
+| `GET`  | `/api/auth/me`       | session | The current public user                 |
+
+### Protecting routes with the session guard
+
+`login` returns a `token`. Clients send it back as `Authorization: Bearer <token>`. `requireSession` (`src/api/auth/auth.guard.ts`) looks the token up in `sessions`, joins `users`, and makes the user available to the handler. A missing, malformed, or unknown token becomes `401 { "error": "..." }` through the shared error handler.
+
+A new module protects its routes like this. Do not write your own bearer check, and do not use `(req as any).user`:
+
+```ts
+// src/api/api.ts
+import { requireSession } from "./auth/auth.guard.js";
+apiRouter.get("/orders", requireSession, getOrders);
+
+// src/api/orders/orders.controller.ts
+import { getSessionUser } from "../auth/auth.guard.js";
+export const getOrders = (_req: Readonly<Request>, res: Readonly<Response>): void => {
+  const user = getSessionUser(res); // typed `User`; never includes the password hash
+  res.json(listOrdersFor(user.id));
+};
+```
+
+To protect a whole router, use `router.use(requireSession)` before its routes. `getSessionUser` throws a server error when it is called on a route without the guard, so a missing guard fails loudly.
+
+### Database tables: one owner per module
+
+`src/core/db.ts` only opens the shared SQLite connection. **Never add table creation to `getDb`.**
+
+Each module owns its schema:
+
+1. `{module}.repository.ts` exports `init{Module}Repository()`, which runs its `CREATE TABLE IF NOT EXISTS …` (and indexes). See `initAuthRepository()` for an example.
+2. The module's service calls it from a `start{Module}…()` function, and `src/main.ts` calls that at startup, next to `startAuthTracking()` and `startHealthTracking()`.
+3. Tests call the same init function before they touch the tables.
 
 ## Logging
 
