@@ -1,7 +1,9 @@
 {
   "name": "back-express",
-  "version": "0.1.0",
-  "codename": "oktoberfest",
+  "version": "0.2.0",
+  "config": {
+    "codename": "oktoberfest"
+  },
   "description": "Back-end Express archetype",
   "author": {
     "name": "Alberto Basalo",
