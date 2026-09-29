@@ -1,4 +1,4 @@
-import { getDb } from "../../core/db.js";
+import { getDb } from "../../shared/db.js";
 import { coerceToFiniteNumber } from "../../shared/type.utils.js";
 
 export const initHealthRepository = (): void => {

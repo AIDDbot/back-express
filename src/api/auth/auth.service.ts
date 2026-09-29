@@ -2,11 +2,13 @@ import { ApiError } from "../../shared/errors.js";
 import { isNonEmptyString, isRecord } from "../../shared/guard.utils.js";
 import { createLogger } from "../../shared/logger.js";
 import {
+  DuplicateEmailError,
   findUserByEmail,
   findUserBySessionToken,
   initAuthRepository,
   insertSession,
   insertUser,
+  type InsertUserParams,
   type UserRecord,
 } from "./auth.repository.js";
 import {
@@ -19,6 +21,7 @@ import {
 
 const INVALID_CREDENTIALS = "Invalid credentials";
 const INVALID_SESSION = "Invalid session";
+const EMAIL_TAKEN = "Email already registered";
 const USER_ROLE = "user";
 const log = createLogger("auth");
 
@@ -61,18 +64,29 @@ const validateRegisterRequest = (body: unknown): RegisterRequest => {
   return { email, name, password };
 };
 
+const emailTaken = (): ApiError => {
+  log.warn("Registration rejected: email already registered");
+  return new ApiError(409, EMAIL_TAKEN);
+};
+
+/** The pre-check can race with a concurrent registration; the UNIQUE constraint has the final word. */
+const insertUserOrConflict = (params: Readonly<InsertUserParams>): UserRecord => {
+  try {
+    return insertUser(params);
+  } catch (error) {
+    if (error instanceof DuplicateEmailError) throw emailTaken();
+    throw error;
+  }
+};
+
 export const registerUser = async (body: unknown): Promise<User> => {
   const request = validateRegisterRequest(body);
   const email = normalizeEmail(request.email);
 
-  const existing = findUserByEmail(email);
-  if (existing) {
-    log.warn("Registration rejected: email already registered");
-    throw new ApiError(409, "Email already registered");
-  }
+  if (findUserByEmail(email)) throw emailTaken();
 
   const passwordHash = await Bun.password.hash(request.password, { algorithm: "argon2id" });
-  const record = insertUser({ email, name: request.name, passwordHash, role: USER_ROLE });
+  const record = insertUserOrConflict({ email, name: request.name, passwordHash, role: USER_ROLE });
   log.info(`User registered: ${record.id}`);
   return toPublicUser(record);
 };

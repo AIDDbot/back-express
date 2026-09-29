@@ -5,14 +5,11 @@ import { join } from "node:path";
 import { apiRouter } from "./api/api.js";
 import { startAuthTracking } from "./api/auth/auth.service.js";
 import { startHealthTracking } from "./api/health/health.service.js";
+import { errorHandler } from "./core/error-handler.js";
 import { listen } from "./core/listener.js";
 import { requestLogger } from "./core/request-logger.js";
 import { API_BASE_PATH, CORS_ORIGIN, PORT } from "./shared/config.js";
-import { errorHandler, setErrorsLogger } from "./shared/errors.js";
 import { createLogger } from "./shared/logger.js";
-
-// Inject logger into error handler
-setErrorsLogger(createLogger("api"));
 
 const app = express();
 const origin = typeof CORS_ORIGIN === "string" ? CORS_ORIGIN : [...CORS_ORIGIN];
@@ -27,7 +24,7 @@ app.get("/favicon.ico", (_req: Readonly<Request>, res: Readonly<Response>): void
 
 app.use(API_BASE_PATH, apiRouter);
 
-app.use(errorHandler);
+app.use(errorHandler());
 try {
   startHealthTracking();
   startAuthTracking();

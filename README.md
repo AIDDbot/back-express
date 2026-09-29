@@ -47,13 +47,16 @@ Runtime settings live in `src/shared/config.ts`. Values that change per machine 
 
 ## Architecture
 
-Two main containers (api and core) and a shared one. At core are the logic and artifacts fro the server the express app and any middleware. The API is where features live. Both can use the shared utilities.
+Two main containers (api and core) and a shared one. `core/` holds the server infrastructure: the listener and the Express middleware (request logger, error handler). `api/` is where features live. Both can use `shared/`: framework-free utilities, config, logger, `ApiError`, and the SQLite connection (`db.ts`). `src/main.ts` is the composition root and the only file that may import from every folder.
 
 ```txt
-/api - > depends on shared
-/core - > depends on shared
-/shared - > no dependencies
+main.ts  -> depends on api, core, shared
+/api     -> depends on shared only (shared/db.js from repositories only)
+/core    -> depends on shared
+/shared  -> Node built-ins only (no Express, no other folder)
 ```
+
+These rules are enforced by `bun run lint` (`eslint/no-restricted-imports` overrides in `.oxlintrc.json`), together with `import/no-cycle`. Test files are exempt.
 
 ### API features
 
@@ -63,12 +66,20 @@ Inside is a simple layered architecture with controllers handling HTTP requests,
 
 ```txt
 src/api/
+  api.ts            -> wires controllers and guards (never services or repositories)
   endpoint-alfa/
-    *.controller.ts -> depends on the service
-    *.service.ts -> depends on the repository
-    *.repository.ts -> depends on the database connection
-    *.type.ts -> defines types used by the endpoint
+    *.controller.ts -> depends on the service and guards
+    *.guard.ts      -> Express middleware over the service
+    *.service.ts    -> depends on the repository; no Express
+    *.repository.ts -> depends on shared/db.js; no upper layer, no ApiError
+    *.types.ts      -> leaf: only other *.types.ts and shared
 ```
+
+A feature reaches another feature only through its public surface: `*.guard.ts` and `*.types.ts` (plus `*.service.ts`, from a service). Importing another feature's repository or controller is a lint error.
+
+Repositories know nothing of HTTP: they throw domain errors (e.g. `DuplicateEmailError`) and the service maps them to an `ApiError` with its status.
+
+When adding a new kind of file, write the patterns with `group` (gitignore-style globs, `!` to allow). Avoid `regex`: oxlint does not support lookahead and silently ignores such a pattern.
 
 ## API
 
@@ -104,7 +115,7 @@ To protect a whole router, use `router.use(requireSession)` before its routes. `
 
 ### Database tables: one owner per module
 
-`src/core/db.ts` only opens the shared SQLite connection. **Never add table creation to `getDb`.**
+`src/shared/db.ts` only opens the shared SQLite connection. **Never add table creation to `getDb`.**
 
 Each module owns its schema:
 

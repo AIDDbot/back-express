@@ -2,9 +2,10 @@ import express, { type Response } from "express";
 import { strict as assert } from "node:assert";
 import { mkdirSync } from "node:fs";
 import type { AddressInfo } from "node:net";
-import { afterEach, beforeEach, describe, it, mock } from "node:test";
-import { ApiError, errorHandler, setErrorsLogger } from "../shared/errors.js";
-import { createLogger } from "../shared/logger.js";
+import { afterEach, describe, it, mock } from "node:test";
+import { ApiError } from "../shared/errors.js";
+import { createLogger, type Logger } from "../shared/logger.js";
+import { errorHandler } from "./error-handler.js";
 
 interface ErrorResponse {
   body?: unknown;
@@ -23,20 +24,17 @@ const handle = (error: unknown): ErrorResponse => {
     },
   };
 
-  errorHandler(error as never, {} as never, res as unknown as Response, (() => {}) as never);
+  errorHandler(testLogger())(error, {} as never, res as unknown as Response, (() => {}) as never);
   return response;
 };
 
-const initTestLogger = (): void => {
-  // Initialize logger for tests with test config
+const testLogger = (): Logger => {
   const testLogDir = "./logs/test";
   mkdirSync(testLogDir, { recursive: true });
-  setErrorsLogger(createLogger("errors", { dir: testLogDir, level: "error" }));
+  return createLogger("errors", { dir: testLogDir, level: "error" });
 };
 
 void describe("error handler — ApiError and client errors", () => {
-  beforeEach(initTestLogger);
-
   void it("preserves an ApiError status and message", () => {
     const response = handle(new ApiError(401, "Authentication required"));
 
@@ -61,8 +59,6 @@ void describe("error handler — ApiError and client errors", () => {
 });
 
 void describe("error handler — server errors", () => {
-  beforeEach(initTestLogger);
-
   afterEach(() => {
     mock.restoreAll();
   });
@@ -96,7 +92,7 @@ void describe("error handler integration", () => {
     const app = express();
     app.use(express.json());
     app.post("/", (_req, res) => res.sendStatus(204));
-    app.use(errorHandler);
+    app.use(errorHandler(testLogger()));
     const server = app.listen(0);
 
     try {

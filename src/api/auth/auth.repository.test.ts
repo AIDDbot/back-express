@@ -1,6 +1,7 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
 import {
+  DuplicateEmailError,
   findUserByEmail,
   findUserBySessionToken,
   initAuthRepository,
@@ -9,7 +10,6 @@ import {
 } from "./auth.repository.js";
 
 const MIN_ID = 0;
-const CONFLICT = 409;
 
 const uniqueEmail = (label: string): string =>
   `${label}-${Date.now()}-${Math.random().toString(36).slice(2)}@example.com`;
@@ -70,20 +70,13 @@ void describe("auth repository - session lookup", () => {
 });
 
 void describe("auth repository - duplicate email conflict (T0005)", () => {
-  void it("insertUser rejects a duplicate email with ApiError 409, not a raw DB error", () => {
+  void it("insertUser rejects a duplicate email with DuplicateEmailError, not a raw DB error", () => {
     const email = uniqueEmail("duplicate");
     insertUser({ email, name: "Ada", passwordHash: "hash-1", role: "user" });
 
-    assert.throws(
-      () => {
-        insertUser({ email, name: "Ada 2", passwordHash: "hash-2", role: "user" });
-      },
-      (error: unknown) =>
-        error instanceof Error &&
-        "status" in error &&
-        (error as { status: unknown }).status === CONFLICT &&
-        error.message === "Email already registered",
-    );
+    assert.throws(() => {
+      insertUser({ email, name: "Ada 2", passwordHash: "hash-2", role: "user" });
+    }, DuplicateEmailError);
   });
 
   void it("insertUser lets a non-unique DB error surface unchanged", () => {
@@ -98,7 +91,7 @@ void describe("auth repository - duplicate email conflict (T0005)", () => {
           role: "admin",
         });
       },
-      (error: unknown) => error instanceof Error && !("status" in error),
+      (error: unknown) => error instanceof Error && !(error instanceof DuplicateEmailError),
     );
   });
 });

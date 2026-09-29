@@ -1,6 +1,5 @@
 import type { StatementResultingChanges } from "node:sqlite";
-import { getDb } from "../../core/db.js";
-import { ApiError } from "../../shared/errors.js";
+import { getDb } from "../../shared/db.js";
 import { isRecord } from "../../shared/guard.utils.js";
 
 /** Internal row shape; includes the password hash, never exposed on the wire. */
@@ -93,6 +92,17 @@ export interface InsertUserParams {
   role: string;
 }
 
+/**
+ * Domain error: the email is already taken. The repository knows nothing of HTTP;
+ * the service decides how this reaches the client.
+ */
+export class DuplicateEmailError extends Error {
+  public constructor(email: string) {
+    super(`Email already registered: ${email}`);
+    this.name = "DuplicateEmailError";
+  }
+}
+
 /** SQLite extended result code for a UNIQUE constraint violation. */
 const SQLITE_CONSTRAINT_UNIQUE = 2067;
 
@@ -122,7 +132,7 @@ export const insertUser = (params: Readonly<InsertUserParams>): UserRecord => {
       .run(params.email, params.name, params.passwordHash, params.role, createdAt);
   } catch (error) {
     if (isUniqueEmailViolation(error)) {
-      throw new ApiError(409, "Email already registered");
+      throw new DuplicateEmailError(params.email);
     }
     throw error;
   }

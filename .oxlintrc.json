@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["typescript", "unicorn", "eslint", "oxc"],
+  "plugins": ["typescript", "unicorn", "eslint", "oxc", "import"],
   "options": {
     "typeAware": true,
     "typeCheck": true
@@ -16,9 +16,240 @@
     "eslint/sort-imports": "off",
     "eslint/sort-vars": "off",
     "@typescript-eslint/strict-boolean-expressions": "off",
-    "@typescript-eslint/prefer-readonly-parameter-types": "off"
+    "@typescript-eslint/prefer-readonly-parameter-types": "off",
+    "import/no-cycle": "error",
+    "import/no-self-import": "error"
   },
   "overrides": [
+    {
+      "files": ["src/main.ts"],
+      "rules": {
+        "import/max-dependencies": "off"
+      }
+    },
+    {
+      "files": ["src/shared/**/*.ts"],
+      "rules": {
+        "eslint/no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["../**", "express", "cors"],
+                "message": "shared/ is the leaf layer: only Node built-ins and other shared/ files, no Express."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/core/**/*.ts"],
+      "rules": {
+        "eslint/no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["../api/**", "../main.js"],
+                "message": "core/ is infrastructure: it may use shared/, never api/ features or main."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/api/*.ts"],
+      "rules": {
+        "eslint/no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "./*/*.service.js",
+                  "./*/*.repository.js",
+                  "../core/**",
+                  "../shared/db.js",
+                  "../main.js"
+                ],
+                "message": "The router only wires controllers and guards."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/api/*/*.ts"],
+      "rules": {
+        "eslint/no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "../*/*",
+                  "!../*/*.guard.js",
+                  "!../*/*.types.js",
+                  "../api.js",
+                  "../../main.js"
+                ],
+                "message": "A feature reaches another one only through its *.guard.js or *.types.js, and never imports the router or main."
+              },
+              {
+                "group": ["../../core/**", "../../shared/db.js"],
+                "message": "Features never use core/, and only repositories open the database (shared/db.js)."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/api/*/*.controller.ts"],
+      "rules": {
+        "eslint/no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "../*/*",
+                  "!../*/*.guard.js",
+                  "!../*/*.types.js",
+                  "../api.js",
+                  "../../main.js"
+                ],
+                "message": "A feature reaches another one only through its *.guard.js or *.types.js, and never imports the router or main."
+              },
+              {
+                "group": ["../../core/**", "../../shared/db.js"],
+                "message": "Features never use core/, and only repositories open the database (shared/db.js)."
+              },
+              {
+                "group": ["./*.repository.js"],
+                "message": "Controllers reach data through their service, never the repository."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/api/*/*.guard.ts"],
+      "rules": {
+        "eslint/no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "../*/*",
+                  "!../*/*.guard.js",
+                  "!../*/*.types.js",
+                  "../api.js",
+                  "../../main.js"
+                ],
+                "message": "A feature reaches another one only through its *.guard.js or *.types.js, and never imports the router or main."
+              },
+              {
+                "group": ["../../core/**", "../../shared/db.js"],
+                "message": "Features never use core/, and only repositories open the database (shared/db.js)."
+              },
+              {
+                "group": ["./*.controller.js", "./*.repository.js"],
+                "message": "Guards are HTTP middleware over the service: no controllers or repositories."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/api/*/*.service.ts"],
+      "rules": {
+        "eslint/no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "../*/*",
+                  "!../*/*.service.js",
+                  "!../*/*.types.js",
+                  "../api.js",
+                  "../../main.js"
+                ],
+                "message": "A service reaches another feature only through its *.service.js or *.types.js, and never imports the router or main."
+              },
+              {
+                "group": ["../../core/**", "../../shared/db.js"],
+                "message": "Features never use core/, and only repositories open the database (shared/db.js)."
+              },
+              {
+                "group": ["express", "./*.controller.js", "./*.guard.js"],
+                "message": "Services hold business logic: no Express or HTTP layer, and data only through their repository."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/api/*/*.repository.ts"],
+      "rules": {
+        "eslint/no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["../*/*", "!../*/*.types.js", "../api.js", "../../main.js"],
+                "message": "A repository owns only its feature's tables; other features are reached through their service."
+              },
+              {
+                "group": [
+                  "express",
+                  "../../core/**",
+                  "../../shared/errors.js",
+                  "./*.controller.js",
+                  "./*.guard.js",
+                  "./*.service.js"
+                ],
+                "message": "Repositories only talk to the database (shared/db.js): no HTTP errors, Express, core/ or upper layers. Throw a domain error and let the service map it."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/api/*/*.types.ts"],
+      "rules": {
+        "eslint/no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "express",
+                  "./*",
+                  "!./*.types.js",
+                  "../*/*",
+                  "!../*/*.types.js",
+                  "../api.js",
+                  "../../**",
+                  "!../../shared/**",
+                  "../../shared/db.js"
+                ],
+                "message": "Type files are leaves: only other *.types.js and shared/ (never the database)."
+              }
+            ]
+          }
+        ]
+      }
+    },
     {
       "files": ["**/*.test.ts", "**/*.spec.ts"],
       "rules": {
@@ -28,7 +259,8 @@
         "typescript/no-unsafe-member-access": "off",
         "typescript/no-unsafe-assignment": "off",
         "unicorn/no-useless-undefined": "off",
-        "oxc/approx-constant": "off"
+        "oxc/approx-constant": "off",
+        "eslint/no-restricted-imports": "off"
       }
     }
   ],

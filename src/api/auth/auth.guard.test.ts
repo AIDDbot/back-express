@@ -3,7 +3,7 @@ import { strict as assert } from "node:assert";
 import type { Server } from "node:http";
 import type { AddressInfo } from "node:net";
 import { after, before, describe, it } from "node:test";
-import { errorHandler } from "../../shared/errors.js";
+import { errorHandler } from "../../core/error-handler.js";
 import { apiRouter } from "../api.js";
 import { getSessionUser, requireSession } from "./auth.guard.js";
 import { loginUser, registerUser, startAuthTracking } from "./auth.service.js";
@@ -97,7 +97,7 @@ const startApi = async (): Promise<void> => {
   const app = express();
   app.use(express.json());
   app.use("/api", apiRouter);
-  app.use(errorHandler);
+  app.use(errorHandler());
   const server = app.listen(0);
   http.server = server;
   await new Promise<void>((resolve) => {
