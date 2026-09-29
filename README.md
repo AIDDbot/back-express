@@ -45,6 +45,31 @@ Runtime settings live in `src/shared/config.ts`. Values that change per machine 
 | `LOG_LEVEL`          | `info`           | Minimum level: `debug`, `info`, `warn`, `error`                          |
 | `CORS_ORIGIN`        | `*`              | Allowed browser origin, or a comma-separated list                        |
 
+## Architecture
+
+Two main containers (api and core) and a shared one. At core are the logic and artifacts fro the server the express app and any middleware. The API is where features live. Both can use the shared utilities.
+
+```txt
+/api - > depends on shared
+/core - > depends on shared
+/shared - > no dependencies
+```
+
+### API features
+
+The API exposes endpoints following screaming snake case conventions for paths and uses standard HTTP methods for actions.
+
+Inside is a simple layered architecture with controllers handling HTTP requests, services containing business logic, and repositories managing database interactions.
+
+```txt
+src/api/
+  endpoint-alfa/
+    *.controller.ts -> depends on the service
+    *.service.ts -> depends on the repository
+    *.repository.ts -> depends on the database connection
+    *.type.ts -> defines types used by the endpoint
+```
+
 ## API
 
 Every route is mounted under `/api` (see `src/api/api.ts`). Errors always answer `{ "error": "..." }` with the proper status code.
