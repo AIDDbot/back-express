@@ -55,9 +55,7 @@ const findWindowsConflict = async (
   if (pid === undefined) {
     return undefined;
   }
-  const { stdout: taskListOutput } = await runtime.exec(
-    `tasklist /FI "PID eq ${pid}" /FO CSV /NH`,
-  );
+  const { stdout: taskListOutput } = await runtime.exec(`tasklist /FI "PID eq ${pid}" /FO CSV /NH`);
   const processName =
     taskListOutput.split(",")[FIRST_ITEM_INDEX]?.replaceAll('"', "") ?? "unknown process";
   return { pid, processName };

@@ -79,4 +79,3 @@ void describe("getSessionUser", () => {
     assert.throws(() => getSessionUser(res), /session middleware/u);
   });
 });
-
