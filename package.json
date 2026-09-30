@@ -1,14 +1,23 @@
 {
   "name": "back-express",
   "version": "0.2.0",
-  "config": {
-    "codename": "oktoberfest"
-  },
   "description": "Back-end Express archetype",
+  "keywords": [
+    "archetype",
+    "backend",
+    "express",
+    "node",
+    "starter"
+  ],
+  "homepage": "https://aiddbot.com",
+  "license": "MIT",
   "author": {
     "name": "Alberto Basalo",
     "email": "albertobasalo@aicode.academy",
     "url": "https://aicode.academy"
+  },
+  "repository": {
+    "url": "https://github.com/AIDDbot/back-express"
   },
   "type": "module",
   "scripts": {
@@ -38,6 +47,9 @@
     "oxlint": "^1.86.0",
     "oxlint-tsgolint": "^7.0.2003",
     "typescript": "^7.0.2"
+  },
+  "config": {
+    "codename": "oktoberfest"
   },
   "engines": {
     "bun": ">=1.4.0",

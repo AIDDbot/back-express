@@ -1,3 +1,5 @@
+import { isRecord } from "../../shared/type.utils.js";
+
 export type UserRole = "user";
 
 const ROLES: readonly UserRole[] = ["user"];
@@ -13,6 +15,14 @@ export interface User {
   role: UserRole;
   createdAt: string;
 }
+
+export const isPublicUser = (value: unknown): value is User =>
+  isRecord(value) &&
+  typeof value["id"] === "number" &&
+  typeof value["email"] === "string" &&
+  typeof value["name"] === "string" &&
+  isUserRole(value["role"]) &&
+  typeof value["createdAt"] === "string";
 
 /** Request body of POST /api/auth/register */
 export interface RegisterRequest {

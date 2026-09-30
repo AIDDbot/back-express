@@ -2,12 +2,13 @@ import cors from "cors";
 import express, { type Request, type Response } from "express";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { apiRouter } from "./api/api.js";
-import { startAuthTracking } from "./api/auth/auth.service.js";
+import { createApiRouter } from "./api/api.js";
+import { findSessionUser, startAuthTracking } from "./api/auth/auth.service.js";
 import { startHealthTracking } from "./api/health/health.service.js";
 import { errorHandler } from "./core/error-handler.js";
 import { listen } from "./core/listener.js";
 import { requestLogger } from "./core/request-logger.js";
+import { createSessionMiddleware } from "./core/session.middleware.js";
 import { API_BASE_PATH, CORS_ORIGIN, PORT } from "./shared/config.js";
 import { createLogger } from "./shared/logger.js";
 
@@ -22,7 +23,7 @@ app.get("/favicon.ico", (_req: Readonly<Request>, res: Readonly<Response>): void
   res.type("image/png").send(logo);
 });
 
-app.use(API_BASE_PATH, apiRouter);
+app.use(API_BASE_PATH, createApiRouter(createSessionMiddleware(findSessionUser)));
 
 app.use(errorHandler());
 try {

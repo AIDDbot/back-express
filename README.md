@@ -47,12 +47,12 @@ Runtime settings live in `src/shared/config.ts`. Values that change per machine 
 
 ## Architecture
 
-Two main containers (api and core) and a shared one. `core/` holds the server infrastructure: the listener and the Express middleware (request logger, error handler). `api/` is where features live. Both can use `shared/`: framework-free utilities, config, logger, `ApiError`, and the SQLite connection (`db.ts`). `src/main.ts` is the composition root and the only file that may import from every folder.
+Two main containers (api and core) and a shared one. `core/` holds server infrastructure and Express middleware, including session middleware. `api/` is where features live. Both can use `shared/`: framework-free utilities, config, logger, `ApiError`, and the SQLite connection (`db.ts`). `src/main.ts` is the composition root and the only file that may import from every folder; it connects the core session middleware to the auth service.
 
 ```txt
 main.ts  -> depends on api, core, shared
-/api     -> depends on shared only (shared/db.js from repositories only)
-/core    -> depends on shared
+/api     -> depends on shared and Express (shared/db.js from repositories only); router receives middleware by injection
+/core    -> depends on shared and Express; session lookup is injected
 /shared  -> Node built-ins only (no Express, no other folder)
 ```
 
@@ -66,16 +66,15 @@ Inside is a simple layered architecture with controllers handling HTTP requests,
 
 ```txt
 src/api/
-  api.ts            -> wires controllers and guards (never services or repositories)
+  api.ts            -> wires public routes, injected session middleware, and controllers
   endpoint-alfa/
-    *.controller.ts -> depends on the service and guards
-    *.guard.ts      -> Express middleware over the service
+    *.controller.ts -> depends on the service and auth session accessor
     *.service.ts    -> depends on the repository; no Express
     *.repository.ts -> depends on shared/db.js; no upper layer, no ApiError
     *.types.ts      -> leaf: only other *.types.ts and shared
 ```
 
-A feature reaches another feature only through its public surface: `*.guard.ts` and `*.types.ts` (plus `*.service.ts`, from a service). Importing another feature's repository or controller is a lint error.
+A feature reaches another feature only through its public surface: `*.middleware.ts` and `*.types.ts` (plus `*.service.ts`, from a service). Importing another feature's repository or controller is a lint error.
 
 Repositories know nothing of HTTP: they throw domain errors (e.g. `DuplicateEmailError`) and the service maps them to an `ApiError` with its status.
 
@@ -92,26 +91,26 @@ Every route is mounted under `/api` (see `src/api/api.ts`). Errors always answer
 | `POST` | `/api/auth/login`    | public  | `{ token, user }`; stores a session row |
 | `GET`  | `/api/auth/me`       | session | The current public user                 |
 
-### Protecting routes with the session guard
+### Protecting routes with session middleware
 
-`login` returns a `token`. Clients send it back as `Authorization: Bearer <token>`. `requireSession` (`src/api/auth/auth.guard.ts`) looks the token up in `sessions`, joins `users`, and makes the user available to the handler. A missing, malformed, or unknown token becomes `401 { "error": "..." }` through the shared error handler.
+`login` returns a `token`. Clients send it back as `Authorization: Bearer <token>`. `createSessionMiddleware` (`src/core/session.middleware.ts`) parses the bearer token and delegates session lookup to the auth service, which joins `sessions` and `users`. `api.ts` applies it after the public health, registration, and login routes, so routes added after that point require a session by default. A missing, malformed, or unknown token becomes `401 { "error": "..." }` through the shared error handler.
 
-A new module protects its routes like this. Do not write your own bearer check, and do not use `(req as any).user`:
+Add protected routes after the middleware registration in `api.ts`. Do not write your own bearer check, and do not use `(req as any).user`:
 
 ```ts
-// src/api/api.ts
-import { requireSession } from "./auth/auth.guard.js";
-apiRouter.get("/orders", requireSession, getOrders);
+// Inside createApiRouter(requireSession), after apiRouter.use(requireSession)
+apiRouter.use(requireSession);
+apiRouter.get("/orders", getOrders);
 
 // src/api/orders/orders.controller.ts
-import { getSessionUser } from "../auth/auth.guard.js";
+import { getSessionUser } from "../auth/auth.session.js";
 export const getOrders = (_req: Readonly<Request>, res: Readonly<Response>): void => {
   const user = getSessionUser(res); // typed `User`; never includes the password hash
   res.json(listOrdersFor(user.id));
 };
 ```
 
-To protect a whole router, use `router.use(requireSession)` before its routes. `getSessionUser` throws a server error when it is called on a route without the guard, so a missing guard fails loudly.
+`getSessionUser` throws a server error when called on a route that did not pass through the session middleware, so a missing middleware fails loudly.
 
 ### Database tables: one owner per module
 

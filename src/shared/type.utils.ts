@@ -1,8 +1,14 @@
 /**
- * Utilities to safely parse, coerce and manipulate numbers from unknown values.
- * Aim: be resilient when values come from environment variables, databases,
- * or external input (strings, objects, bigints, etc.).
+ * Utilities to narrow, parse, coerce, and manipulate values from untrusted
+ * sources such as environment variables, databases, or external input.
  */
+
+/** Generic predicates for narrowing untrusted values to known shapes. */
+export const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null;
+
+export const isNonEmptyString = (value: unknown): value is string =>
+  typeof value === "string" && value.trim() !== "";
 
 export const isNumber = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
 

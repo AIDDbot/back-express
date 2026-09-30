@@ -1,5 +1,5 @@
 import { ApiError } from "../../shared/errors.js";
-import { isNonEmptyString, isRecord } from "../../shared/guard.utils.js";
+import { isNonEmptyString, isRecord } from "../../shared/type.utils.js";
 import { createLogger } from "../../shared/logger.js";
 import {
   DuplicateEmailError,

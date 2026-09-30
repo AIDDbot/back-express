@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { getSessionUser } from "./auth.guard.js";
+import { getSessionUser } from "./auth.session.js";
 import { loginUser, registerUser } from "./auth.service.js";
 
 const CREATED = 201;

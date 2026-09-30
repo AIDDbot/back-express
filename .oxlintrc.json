@@ -74,7 +74,7 @@
                   "../shared/db.js",
                   "../main.js"
                 ],
-                "message": "The router only wires controllers and guards."
+                "message": "The router only wires controllers and middleware."
               }
             ]
           }
@@ -91,12 +91,12 @@
               {
                 "group": [
                   "../*/*",
-                  "!../*/*.guard.js",
+                  "!../*/*.middleware.js",
                   "!../*/*.types.js",
                   "../api.js",
                   "../../main.js"
                 ],
-                "message": "A feature reaches another one only through its *.guard.js or *.types.js, and never imports the router or main."
+                "message": "A feature reaches another one only through its *.middleware.js or *.types.js, and never imports the router or main."
               },
               {
                 "group": ["../../core/**", "../../shared/db.js"],
@@ -108,7 +108,7 @@
       }
     },
     {
-      "files": ["src/api/*/*.controller.ts"],
+      "files": ["src/api/*/*.controller.ts", "src/api/*/*.middleware.ts"],
       "rules": {
         "eslint/no-restricted-imports": [
           "error",
@@ -117,42 +117,12 @@
               {
                 "group": [
                   "../*/*",
-                  "!../*/*.guard.js",
+                  "!../*/*.middleware.js",
                   "!../*/*.types.js",
                   "../api.js",
                   "../../main.js"
                 ],
-                "message": "A feature reaches another one only through its *.guard.js or *.types.js, and never imports the router or main."
-              },
-              {
-                "group": ["../../core/**", "../../shared/db.js"],
-                "message": "Features never use core/, and only repositories open the database (shared/db.js)."
-              },
-              {
-                "group": ["./*.repository.js"],
-                "message": "Controllers reach data through their service, never the repository."
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "files": ["src/api/*/*.guard.ts"],
-      "rules": {
-        "eslint/no-restricted-imports": [
-          "error",
-          {
-            "patterns": [
-              {
-                "group": [
-                  "../*/*",
-                  "!../*/*.guard.js",
-                  "!../*/*.types.js",
-                  "../api.js",
-                  "../../main.js"
-                ],
-                "message": "A feature reaches another one only through its *.guard.js or *.types.js, and never imports the router or main."
+                "message": "A feature reaches another one only through its *.middleware.js or *.types.js, and never imports the router or main."
               },
               {
                 "group": ["../../core/**", "../../shared/db.js"],
@@ -160,7 +130,7 @@
               },
               {
                 "group": ["./*.controller.js", "./*.repository.js"],
-                "message": "Guards are HTTP middleware over the service: no controllers or repositories."
+                "message": "HTTP handlers reach data through services and never import controllers or repositories."
               }
             ]
           }
@@ -189,7 +159,7 @@
                 "message": "Features never use core/, and only repositories open the database (shared/db.js)."
               },
               {
-                "group": ["express", "./*.controller.js", "./*.guard.js"],
+                "group": ["express", "./*.controller.js", "./*.middleware.js"],
                 "message": "Services hold business logic: no Express or HTTP layer, and data only through their repository."
               }
             ]
@@ -214,7 +184,7 @@
                   "../../core/**",
                   "../../shared/errors.js",
                   "./*.controller.js",
-                  "./*.guard.js",
+                  "./*.middleware.js",
                   "./*.service.js"
                 ],
                 "message": "Repositories only talk to the database (shared/db.js): no HTTP errors, Express, core/ or upper layers. Throw a domain error and let the service map it."

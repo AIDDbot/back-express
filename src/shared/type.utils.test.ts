@@ -4,8 +4,10 @@ import {
   clamp,
   coerceToFiniteNumber,
   floorTo,
+  isNonEmptyString,
   isNumber,
   isNumericString,
+  isRecord,
   parseAllNumbersFromString,
   parseNumberFromString,
   roundTo,
@@ -13,6 +15,22 @@ import {
   safeParseInt,
   toFixedNumber,
 } from "./type.utils.js";
+
+describe("type.utils - value narrowing", () => {
+  it("recognizes non-null records", () => {
+    expect(isRecord({ value: 1 })).toBe(true);
+    expect(isRecord([])).toBe(true);
+    expect(isRecord(null)).toBe(false);
+    expect(isRecord("value")).toBe(false);
+  });
+
+  it("recognizes non-empty strings after trimming", () => {
+    expect(isNonEmptyString(" value ")).toBe(true);
+    expect(isNonEmptyString("")).toBe(false);
+    expect(isNonEmptyString("  ")).toBe(false);
+    expect(isNonEmptyString(1)).toBe(false);
+  });
+});
 
 describe("type.utils - type checking", () => {
   describe("isNumber", () => {

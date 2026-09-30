@@ -11,7 +11,16 @@ const log = createLogger("listener");
 
 // eslint-disable-next-line @typescript-eslint/strict-void-return
 const execAsync = promisify(execCallback);
-// eslint-disable-next-line @typescript-eslint/strict-void-return
+
+export interface ListenerRuntime {
+  confirm: (question: string) => Promise<boolean>;
+  delay: (milliseconds: number) => Promise<void>;
+  exec: (command: string) => Promise<{ stdout: string; stderr: string }>;
+  exit: (code: number) => never;
+  host: string | undefined;
+  platform: NodeJS.Platform;
+}
+
 const exec = (command: string): Promise<{ stdout: string; stderr: string }> => {
   return execAsync(command);
 };
@@ -37,43 +46,56 @@ const parseWindowsPid = (
   const pid = safeParseInt(pidText, NaN);
   return Number.isNaN(pid) ? undefined : pid;
 };
-const findWindowsConflict = async (port: Readonly<number>): Promise<PortConflict | undefined> => {
-  const { stdout: netstatOutput } = await exec("netstat -ano");
+const findWindowsConflict = async (
+  port: Readonly<number>,
+  runtime: Readonly<ListenerRuntime>,
+): Promise<PortConflict | undefined> => {
+  const { stdout: netstatOutput } = await runtime.exec("netstat -ano");
   const pid = parseWindowsPid(netstatOutput, port);
   if (pid === undefined) {
     return undefined;
   }
-  const { stdout: taskListOutput } = await exec(`tasklist /FI "PID eq ${pid}" /FO CSV /NH`);
+  const { stdout: taskListOutput } = await runtime.exec(
+    `tasklist /FI "PID eq ${pid}" /FO CSV /NH`,
+  );
   const processName =
     taskListOutput.split(",")[FIRST_ITEM_INDEX]?.replaceAll('"', "") ?? "unknown process";
   return { pid, processName };
 };
-const findPosixConflict = async (port: Readonly<number>): Promise<PortConflict | undefined> => {
-  const { stdout: pidOutput } = await exec(`lsof -i :${port} -sTCP:LISTEN -t`);
+const findPosixConflict = async (
+  port: Readonly<number>,
+  runtime: Readonly<ListenerRuntime>,
+): Promise<PortConflict | undefined> => {
+  const { stdout: pidOutput } = await runtime.exec(`lsof -i :${port} -sTCP:LISTEN -t`);
   const pid = safeParseInt(pidOutput.trim().split("\n")[FIRST_ITEM_INDEX], NaN);
   if (Number.isNaN(pid)) {
     return undefined;
   }
-  const { stdout: commandOutput } = await exec(`ps -p ${pid} -o comm=`);
+  const { stdout: commandOutput } = await runtime.exec(`ps -p ${pid} -o comm=`);
   return { pid, processName: commandOutput.trim() };
 };
-/** Best-effort lookup; swallows errors from missing tools (e.g. lsof) so callers get a graceful fallback. */
-const findPortConflict = async (port: Readonly<number>): Promise<PortConflict | undefined> => {
+const findPortConflict = async (
+  port: Readonly<number>,
+  runtime: Readonly<ListenerRuntime>,
+): Promise<PortConflict | undefined> => {
   try {
-    if (process.platform === "win32") {
-      return await findWindowsConflict(port);
+    if (runtime.platform === "win32") {
+      return await findWindowsConflict(port, runtime);
     }
-    return await findPosixConflict(port);
+    return await findPosixConflict(port, runtime);
   } catch {
     return undefined;
   }
 };
-const killProcess = async (pid: Readonly<number>): Promise<void> => {
+const killProcess = async (
+  pid: Readonly<number>,
+  runtime: Readonly<ListenerRuntime>,
+): Promise<void> => {
   let command = `kill -9 ${pid}`;
-  if (process.platform === "win32") {
+  if (runtime.platform === "win32") {
     command = `taskkill /F /PID ${pid}`;
   }
-  await exec(command);
+  await runtime.exec(command);
 };
 const confirm = async (question: Readonly<string>): Promise<boolean> => {
   if (!process.stdin.isTTY) {
@@ -84,46 +106,58 @@ const confirm = async (question: Readonly<string>): Promise<boolean> => {
   rl.close();
   return /^y(?<es>es)?$/iu.test(answer.trim());
 };
-const exitForUnknownConflict = (port: Readonly<number>): void => {
+const exitForUnknownConflict = (
+  port: Readonly<number>,
+  runtime: Readonly<ListenerRuntime>,
+): void => {
   log.error(`Port ${port} is already in use. Stop the process using it and retry.`);
-  process.exit(EXIT_FAILURE);
+  runtime.exit(EXIT_FAILURE);
 };
-const confirmRetry = async (pid: Readonly<number>): Promise<void> => {
-  const shouldKill = await confirm(`Kill PID ${pid} and retry? (y/N) `);
+const confirmRetry = async (
+  pid: Readonly<number>,
+  runtime: Readonly<ListenerRuntime>,
+): Promise<void> => {
+  const shouldKill = await runtime.confirm(`Kill PID ${pid} and retry? (y/N) `);
   if (!shouldKill) {
-    process.exit(EXIT_FAILURE);
+    runtime.exit(EXIT_FAILURE);
   }
 };
 const attemptKillAndRetry = async (
   conflict: Readonly<PortConflict>,
   app: Readonly<Express>,
   port: Readonly<number>,
+  runtime: Readonly<ListenerRuntime>,
 ): Promise<void> => {
   log.warn(`Port ${port} is already in use by ${conflict.processName} (PID ${conflict.pid}).`);
-  await confirmRetry(conflict.pid);
-  await killProcess(conflict.pid);
-  await delay(RETRY_DELAY_MS);
-  listen(app, port);
+  await confirmRetry(conflict.pid, runtime);
+  await killProcess(conflict.pid, runtime);
+  await runtime.delay(RETRY_DELAY_MS);
+  listen(app, port, runtime);
 };
-const handlePortInUse = async (app: Readonly<Express>, port: Readonly<number>): Promise<void> => {
-  const conflict = await findPortConflict(port);
+const handlePortInUse = async (
+  app: Readonly<Express>,
+  port: Readonly<number>,
+  runtime: Readonly<ListenerRuntime>,
+): Promise<void> => {
+  const conflict = await findPortConflict(port, runtime);
   if (!conflict) {
-    exitForUnknownConflict(port);
+    exitForUnknownConflict(port, runtime);
     return;
   }
-  await attemptKillAndRetry(conflict, app, port);
+  await attemptKillAndRetry(conflict, app, port, runtime);
 };
 const onServerError = (
   app: Readonly<Express>,
   port: Readonly<number>,
   error: Readonly<NodeJS.ErrnoException>,
+  runtime: Readonly<ListenerRuntime>,
 ): void => {
   if (error.code === "EADDRINUSE") {
-    void handlePortInUse(app, port);
+    void handlePortInUse(app, port, runtime);
     return;
   }
   log.error(`Failed to start server: ${error.message}`);
-  process.exit(EXIT_FAILURE);
+  runtime.exit(EXIT_FAILURE);
 };
 
 /** Address shown in the startup hint. Wildcard binds are reached via localhost. */
@@ -133,16 +167,31 @@ const advertisedHost = (bindHost: string | undefined): string => {
   return bindHost;
 };
 
-export const listen = (app: Readonly<Express>, port: Readonly<number>): void => {
+const defaultRuntime: ListenerRuntime = {
+  confirm,
+  delay,
+  exec,
+  exit: (code) => process.exit(code),
+  host: HOST,
+  platform: process.platform,
+};
+
+export const listen = (
+  app: Readonly<Express>,
+  port: Readonly<number>,
+  runtime: Readonly<ListenerRuntime> = defaultRuntime,
+): void => {
   const onListening = (): void => {
     log.info(`Listening on port ${port}`);
-    const healthUrl = `http://${advertisedHost(HOST)}:${port}${API_BASE_PATH}/health`;
+    const healthUrl = `http://${advertisedHost(runtime.host)}:${port}${API_BASE_PATH}/health`;
     process.stdout.write(`Check server health at ${healthUrl}\n`);
   };
   const server =
-    HOST === undefined ? app.listen(port, onListening) : app.listen(port, HOST, onListening);
+    runtime.host === undefined
+      ? app.listen(port, onListening)
+      : app.listen(port, runtime.host, onListening);
 
   server.on("error", (error: NodeJS.ErrnoException) => {
-    onServerError(app, port, error);
+    onServerError(app, port, error, runtime);
   });
 };

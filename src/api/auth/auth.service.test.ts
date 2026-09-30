@@ -133,7 +133,7 @@ void describe("registerUser concurrency (T0005)", () => {
     const email = uniqueEmail("race-insert");
     await registerUser({ email, name: "Ada", password: "s3cret" });
     // findUserByEmail would already report this email as taken; this forces
-    // the same path the insert-time UNIQUE guard must cover regardless.
+    // The same path the insert-time UNIQUE constraint must cover regardless.
     await assert.rejects(
       registerUser({ email, name: "Ada 2", password: "other" }),
       isApiErrorWithStatus(CONFLICT),
