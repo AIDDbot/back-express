@@ -4,32 +4,30 @@ Archetype with boilerplate code for a backend API with express
 
 ## Quick start
 
-> [!IMPORTANT]
-> this projects uses `bun` as a package manager and runner.
-
-1. Install bun: the fastest tooling manager for Node.js projects.
+Install [Node.ts 26.10+](https://nodejs.org/en/download) with npm (Node 26.10.0 ships npm 11.19.1). `.node-version` pins the baseline release.
 
 ```bash
-# Install Bun
-# (Windows PowerShell)
-powershell -c "irm bun.com/install.ps1 | iex"
-# (macOS/Linux)
-curl -fsSL https://bun.com/install | bash -s
-# Verify installation
-bun --version
-# Upgrade Bun to the latest stable version
-bun upgrade --stable
+node --version  # must be >= 26.10.0
+npm --version
+npm install
+npm start
+npm test
+npm run dev
+npm run test:watch
+npm run lint
+npm run fix
+npm run quality:all
 ```
 
-2. Install dependencies and run the tests
+TypeScript runs directly through Node's stable, default type-stripping; no transpiler or runtime flags are required. Relative imports use `.ts`, and `erasableSyntaxOnly` rejects syntax requiring transformation. Node does not type-check at runtime; the type-aware linter checks types.
 
-```bash
-bun install
-bun start   # runs the server in production mode
-bun test    # runs the unit tests
-bun dev     # runs in watch mode for development
-bun lint    # runs the linter
-```
+### Native APIs and experimental options
+
+Checked against `node --help` and the [Node 26.10 CLI documentation](https://nodejs.org/docs/v26.10.0/api/cli.html): `--test`, `--watch`, and `--run` are stable. [Type-stripping](https://nodejs.org/docs/v26.10.0/api/typescript.html#type-stripping) is stable and enabled by default. The ESM preload option `--import` is still experimental.
+
+Coverage uses the native runner's experimental `--experimental-test-coverage`, `--test-coverage-exclude`, `--test-coverage-lines`, and `--test-coverage-functions` options. It requires 80% lines and functions, prints a text report, and writes `coverage/lcov.info`. Test files, configuration files, generated files, the composition root, API router, controllers, guards, repositories, and type files are excluded. The native `lcov` reporter needs no external coverage package.
+
+Passwords use [native `crypto.argon2` / `crypto.argon2Sync`](https://nodejs.org/docs/v26.10.0/api/crypto.html#cryptoargon2algorithm-parameters-callback) and PHC Argon2id v19 strings: 65536 KiB memory, 2 passes, 1 lane, random 32-byte salt, and 32-byte digest. Verification reads each stored hash's costs and uses `timingSafeEqual`. A synchronous hash is created once at startup for the unknown-email path; each login performs exactly one verification. The historical fixture and migration baseline are documented in `CHANGELOG.md`.
 
 ## Configuration
 
@@ -51,12 +49,12 @@ Two main containers (api and core) and a shared one. `core/` holds server infras
 
 ```txt
 main.ts  -> depends on api, core, shared
-/api     -> depends on shared and Express (shared/db.js from repositories only); router receives middleware by injection
+/api     -> depends on shared and Express (shared/db.ts from repositories only); router receives middleware by injection
 /core    -> depends on shared and Express; session lookup is injected
 /shared  -> Node built-ins only (no Express, no other folder)
 ```
 
-These rules are enforced by `bun run lint` (`eslint/no-restricted-imports` overrides in `.oxlintrc.json`), together with `import/no-cycle`. Test files are exempt.
+These rules are enforced by `npm run lint` (`eslint/no-restricted-imports` overrides in `.oxlintrc.tson`), together with `import/no-cycle`. Test files are exempt.
 
 ### API features
 
@@ -70,7 +68,7 @@ src/api/
   endpoint-alfa/
     *.controller.ts -> depends on the service and auth session accessor
     *.service.ts    -> depends on the repository; no Express
-    *.repository.ts -> depends on shared/db.js; no upper layer, no ApiError
+    *.repository.ts -> depends on shared/db.ts; no upper layer, no ApiError
     *.types.ts      -> leaf: only other *.types.ts and shared
 ```
 
@@ -103,10 +101,10 @@ apiRouter.use(requireSession);
 apiRouter.get("/orders", getOrders);
 
 // src/api/orders/orders.controller.ts
-import { getSessionUser } from "../auth/auth.session.js";
+import { getSessionUser } from "../auth/auth.session.ts";
 export const getOrders = (_req: Readonly<Request>, res: Readonly<Response>): void => {
   const user = getSessionUser(res); // typed `User`; never includes the password hash
-  res.json(listOrdersFor(user.id));
+  res.tson(listOrdersFor(user.id));
 };
 ```
 
@@ -132,22 +130,21 @@ Each module owns its schema:
 ```
 
 ```ts
-import { createLogger } from "./src/shared/logger.js";
+import { createLogger } from "./src/shared/logger.ts";
 const log = createLogger("my-source");
 log.info("something happened");
 ```
 
 ## Code quality checks
 
-During regular coding, `bun run lint` is the only required quality check. It runs the basic linter and provides fast feedback while changes are being developed.
+During regular coding, `npm run lint` is the only required quality check. It runs the basic linter and provides fast feedback while changes are being developed.
 
 The other quality scripts (`quality:warnings`, `quality:complexity`, `quality:coverage`, and `quality:all`) are intended for full audits and solution-hardening work. They do not need to be run for every coding change.
 
 ## Tool stack
 
 - [TypeScript7](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/) : typed superset of JavaScript that compiles to plain JavaScript.
-- [Node26](https://nodejs.org/es/blog/release/v26.0.0/) : JavaScript runtime built on Chrome's V8 JavaScript engine.
-- [Bun 1.4.0](https://bun.com/docs/installation) : JavaScript runtime and package manager used by this project.
+- [Node.js 26.10+](https://nodejs.org/docs/v26.10.0/api/) : JavaScript runtime built on Chrome's V8 JavaScript engine.
 - [Oxlint](https://oxc.rs/docs/guide/usage/linter) : high-performance linter for TypeScript
 
 ---
