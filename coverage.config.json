@@ -1,0 +1,25 @@
+{
+  "$schema": "https://nodejs.org/dist/v26.10.0/docs/node-config-schema.json",
+  "nodeOptions": {
+    "import": ["./test.setup.ts", "./coverage.setup.ts"]
+  },
+  "test": {
+    "experimental-test-coverage": true,
+    "test-coverage-lines": 80,
+    "test-coverage-functions": 80,
+    "test-coverage-exclude": [
+      "**/*.test.ts",
+      "**/*.config.*",
+      "**/generated/**",
+      "src/main.ts",
+      "src/api/api.ts",
+      "src/api/**/*.controller.ts",
+      "src/api/**/*.guard.ts",
+      "src/api/**/*.repository.ts",
+      "src/api/**/*.types.ts",
+      "coverage.setup.ts"
+    ],
+    "test-reporter": ["spec", "lcov"],
+    "test-reporter-destination": ["stdout", "coverage/lcov.info"]
+  }
+}

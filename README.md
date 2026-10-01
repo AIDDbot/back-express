@@ -4,7 +4,7 @@ Archetype with boilerplate code for a backend API with express
 
 ## Quick start
 
-Install [Node.ts 26.10+](https://nodejs.org/en/download) with npm (Node 26.10.0 ships npm 11.19.1). `.node-version` pins the baseline release.
+Install [Node.js 26.10+](https://nodejs.org/en/download) with npm (Node 26.10.0 ships npm 11.19.1). `.node-version` pins the baseline release.
 
 ```bash
 node --version  # must be >= 26.10.0
@@ -24,6 +24,8 @@ TypeScript runs directly through Node's stable, default type-stripping; no trans
 ### Native APIs and experimental options
 
 Checked against `node --help` and the [Node 26.10 CLI documentation](https://nodejs.org/docs/v26.10.0/api/cli.html): `--test`, `--watch`, and `--run` are stable. [Type-stripping](https://nodejs.org/docs/v26.10.0/api/typescript.html#type-stripping) is stable and enabled by default. The ESM preload option `--import` is still experimental.
+
+Coverage options live in `coverage.config.json`, loaded with Node's native `--experimental-config-file` (still experimental in 26.10). The configuration preloads `test.setup.ts` and `coverage.setup.ts`; the latter creates the output directory.
 
 Coverage uses the native runner's experimental `--experimental-test-coverage`, `--test-coverage-exclude`, `--test-coverage-lines`, and `--test-coverage-functions` options. It requires 80% lines and functions, prints a text report, and writes `coverage/lcov.info`. Test files, configuration files, generated files, the composition root, API router, controllers, guards, repositories, and type files are excluded. The native `lcov` reporter needs no external coverage package.
 
