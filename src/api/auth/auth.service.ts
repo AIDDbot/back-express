@@ -1,4 +1,4 @@
-import { password } from "../../shared/password.ts";
+import { password as passwords } from "../../shared/password.ts";
 import { ApiError } from "../../shared/errors.ts";
 import { isNonEmptyString, isRecord } from "../../shared/type.utils.ts";
 import { createLogger } from "../../shared/logger.ts";
@@ -31,7 +31,7 @@ const log = createLogger("auth");
  * as a real hash. Verifying against it when no user is found keeps an
  * unknown-email login as slow as a wrong-password login (T0004).
  */
-const DUMMY_PASSWORD_HASH = password.hashSync("dummy-password-for-timing-parity");
+const DUMMY_PASSWORD_HASH = passwords.hashSync("dummy-password-for-timing-parity");
 
 export const startAuthTracking = (): void => {
   initAuthRepository();
@@ -84,7 +84,7 @@ export const registerUser = async (body: unknown): Promise<User> => {
 
   if (findUserByEmail(email)) throw emailTaken();
 
-  const passwordHash = await password.hash(request.password);
+  const passwordHash = await passwords.hash(request.password);
   const record = insertUserOrConflict({ email, name: request.name, passwordHash, role: USER_ROLE });
   log.info(`User registered: ${record.id}`);
   return toPublicUser(record);
@@ -105,7 +105,7 @@ export const loginUser = async (body: unknown): Promise<Session> => {
 
   const record = findUserByEmail(email);
   const hashToVerify = record ? record.passwordHash : DUMMY_PASSWORD_HASH;
-  const isValid = await password.verify(request.password, hashToVerify);
+  const isValid = await passwords.verify(request.password, hashToVerify);
   if (!record || !isValid) {
     log.warn("Login failed: invalid credentials");
     throw new ApiError(401, INVALID_CREDENTIALS);

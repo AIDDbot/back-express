@@ -6,7 +6,7 @@ process.env["LOG_DIR"] ??= join(tmpdir(), "back-express-test-logs");
 
 /*
  * Keep test runs from writing into the project's ./data/demo.db.
- * Unique per process so parallel or repeated `bun test` runs never share
+ * Unique per process so parallel or repeated `node --test` runs never share
  * users through the same file.
  */
 process.env["DB_PATH"] ??= join(

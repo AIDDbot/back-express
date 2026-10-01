@@ -1,4 +1,10 @@
-import { argon2, argon2Sync, randomBytes, timingSafeEqual, type Argon2Parameters } from "node:crypto";
+import {
+  argon2,
+  argon2Sync,
+  randomBytes,
+  timingSafeEqual,
+  type Argon2Parameters,
+} from "node:crypto";
 
 const DEFAULTS = { memory: 65536, passes: 2, parallelism: 1, tagLength: 32 };
 
@@ -34,7 +40,10 @@ const decodeBase64 = (value: string): Buffer => {
 };
 
 export const verify = async (message: string, encoded: string): Promise<boolean> => {
-  const match = /^\$argon2id\$v=19\$m=(\d+),t=(\d+),p=(\d+)\$([A-Za-z0-9+/]+)\$([A-Za-z0-9+/]+)$/u.exec(encoded);
+  const match =
+    /^\$argon2id\$v=19\$m=(\d+),t=(\d+),p=(\d+)\$([A-Za-z0-9+/]+)\$([A-Za-z0-9+/]+)$/u.exec(
+      encoded,
+    );
   if (!match) return false;
   try {
     const [, memory, passes, parallelism, salt, digest] = match;

@@ -1,3 +1,4 @@
+import { password } from "../../shared/password.ts";
 import assert from "node:assert";
 import { afterEach, describe, it, mock } from "node:test";
 import { findUserByEmail } from "./auth.repository.ts";
@@ -43,7 +44,7 @@ void describe("registerUser", () => {
     const stored = findUserByEmail(email);
     assert.ok(stored, "should persist the user");
     assert.notStrictEqual(stored?.passwordHash, "s3cret", "should never store the plain password");
-    const matches = await Bun.password.verify("s3cret", stored?.passwordHash ?? "");
+    const matches = await password.verify("s3cret", stored?.passwordHash ?? "");
     assert.ok(matches, "the stored hash should verify against the submitted password");
   });
 
@@ -186,8 +187,8 @@ void describe("loginUser timing safety (T0004)", () => {
     mock.restoreAll();
   });
 
-  void it("calls Bun.password.verify exactly once for an unknown email", async () => {
-    const verifySpy = mock.method(Bun.password, "verify");
+  void it("calls password.verify exactly once for an unknown email", async () => {
+    const verifySpy = mock.method(password, "verify");
 
     await assert.rejects(
       loginUser({ email: uniqueEmail("timing-unknown"), password: "whatever" }),
@@ -199,10 +200,10 @@ void describe("loginUser timing safety (T0004)", () => {
     assert.strictEqual(verifySpy.mock.callCount(), 1);
   });
 
-  void it("calls Bun.password.verify exactly once for a known email with a wrong password", async () => {
+  void it("calls password.verify exactly once for a known email with a wrong password", async () => {
     const email = uniqueEmail("timing-known");
     await registerUser({ email, name: "Ada", password: "s3cret" });
-    const verifySpy = mock.method(Bun.password, "verify");
+    const verifySpy = mock.method(password, "verify");
 
     await assert.rejects(
       loginUser({ email, password: "wrong" }),
