@@ -21,25 +21,24 @@
   },
   "type": "module",
   "scripts": {
-    "dev": "bun --watch src/main.ts",
-    "start": "bun src/main.ts",
-    "test": "bun test",
-    "test:watch": "bun test --watch",
+    "dev": "node --watch src/main.ts",
+    "start": "node src/main.ts",
+    "test": "node --import ./test.setup.ts --test \"src/**/*.test.ts\"",
+    "test:watch": "node --watch --import ./test.setup.ts --test \"src/**/*.test.ts\"",
     "lint": "oxlint --format=agent --quiet",
     "lint:fix": "oxlint --fix --format=agent --quiet",
     "format": "oxfmt --write",
-    "fix": "bun run lint:fix && bun run format",
+    "fix": "node --run lint:fix && node --run format",
     "quality:warnings": "oxlint --deny-warnings --format=agent",
     "quality:complexity": "oxlint -c .oxlintrc.complexity.json --format=agent --quiet",
-    "quality:coverage": "bun test --coverage",
-    "quality:all": "bun run quality:warnings && bun run quality:complexity && bun run quality:coverage"
+    "quality:coverage": "node -e \"require('node:fs').mkdirSync('coverage', { recursive: true })\" && node --import ./test.setup.ts --test --experimental-test-coverage --test-coverage-lines=80 --test-coverage-functions=80 --test-coverage-exclude=\"**/*.test.ts\" --test-coverage-exclude=\"**/*.config.*\" --test-coverage-exclude=\"**/generated/**\" --test-coverage-exclude=\"src/main.ts\" --test-coverage-exclude=\"src/api/api.ts\" --test-coverage-exclude=\"src/api/**/*.controller.ts\" --test-coverage-exclude=\"src/api/**/*.guard.ts\" --test-coverage-exclude=\"src/api/**/*.repository.ts\" --test-coverage-exclude=\"src/api/**/*.types.ts\" --test-reporter=spec --test-reporter=lcov --test-reporter-destination=stdout --test-reporter-destination=coverage/lcov.info \"src/**/*.test.ts\"",
+    "quality:all": "node --run quality:warnings && node --run quality:complexity && node --run quality:coverage"
   },
   "dependencies": {
     "cors": "^2.8.6",
     "express": "^5.2.1"
   },
   "devDependencies": {
-    "@types/bun": "^1.4.2",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/node": "^26.6.3",
@@ -52,8 +51,7 @@
     "codename": "oktoberfest"
   },
   "engines": {
-    "bun": ">=1.4.0",
-    "node": ">=26.0.0"
+    "node": ">=26.10.0"
   },
-  "packageManager": "bun@1.4.0"
+  "packageManager": "npm@11.19.1"
 }
