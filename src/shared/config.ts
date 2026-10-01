@@ -1,5 +1,5 @@
 import { isAbsolute, resolve } from "node:path";
-import { clamp, safeParseInt } from "./type.utils.js";
+import { clamp, safeParseInt } from "./type.utils.ts";
 
 /** `src/shared` → repository root, so relative paths ignore the process cwd. */
 const PROJECT_ROOT = resolve(import.meta.dirname, "../..");

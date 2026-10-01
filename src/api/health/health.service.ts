@@ -1,8 +1,8 @@
-import { createLogger } from "../../shared/logger.js";
-import { getRunsCount, initHealthRepository, recordRun } from "./health.repository.js";
-import type { HealthStatus } from "./health.types.js";
+import { createLogger } from "../../shared/logger.ts";
+import { getRunsCount, initHealthRepository, recordRun } from "./health.repository.ts";
+import type { HealthStatus } from "./health.types.ts";
 
-export type { HealthStatus } from "./health.types.js";
+export type { HealthStatus } from "./health.types.ts";
 
 const log = createLogger("health");
 

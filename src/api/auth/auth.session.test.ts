@@ -1,10 +1,10 @@
 import type { Request, Response } from "express";
 import { strict as assert } from "node:assert";
 import { describe, it } from "node:test";
-import { createSessionMiddleware } from "../../core/session.middleware.js";
-import { getSessionUser } from "./auth.session.js";
-import { findSessionUser, loginUser, registerUser, startAuthTracking } from "./auth.service.js";
-import type { User } from "./auth.types.js";
+import { createSessionMiddleware } from "../../core/session.middleware.ts";
+import { getSessionUser } from "./auth.session.ts";
+import { findSessionUser, loginUser, registerUser, startAuthTracking } from "./auth.service.ts";
+import type { User } from "./auth.types.ts";
 
 const UNAUTHORIZED = 401;
 const requireSession = createSessionMiddleware(findSessionUser);

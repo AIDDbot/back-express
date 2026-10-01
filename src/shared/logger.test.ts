@@ -3,7 +3,7 @@ import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "no
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, it, mock } from "node:test";
-import { createLogger, formatLogDate, formatLogLine } from "./logger.js";
+import { createLogger, formatLogDate, formatLogLine } from "./logger.ts";
 
 const SAMPLE_DATE = new Date(2026, 8, 2, 7, 5, 3, 9);
 

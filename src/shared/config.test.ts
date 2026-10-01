@@ -1,6 +1,6 @@
 import { strict as assert } from "node:assert";
 import { describe, it } from "node:test";
-import { parseCorsOrigin, parseHost } from "./config.js";
+import { parseCorsOrigin, parseHost } from "./config.ts";
 
 void describe("parseCorsOrigin", () => {
   void it("defaults to * when unset", () => {

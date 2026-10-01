@@ -3,9 +3,9 @@ import { exec as execCallback } from "node:child_process";
 import { createInterface } from "node:readline/promises";
 import { setTimeout as delay } from "node:timers/promises";
 import { promisify } from "node:util";
-import { API_BASE_PATH, HOST } from "../shared/config.js";
-import { createLogger } from "../shared/logger.js";
-import { safeParseInt } from "../shared/type.utils.js";
+import { API_BASE_PATH, HOST } from "../shared/config.ts";
+import { createLogger } from "../shared/logger.ts";
+import { safeParseInt } from "../shared/type.utils.ts";
 
 const log = createLogger("listener");
 

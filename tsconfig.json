@@ -5,8 +5,11 @@
     "moduleResolution": "nodenext",
     "target": "esnext",
     // "lib": ["es2024" ],
-    "types": ["node", "bun"],
+    "types": ["node"],
     "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "rewriteRelativeImportExtensions": true,
+    "erasableSyntaxOnly": true,
     // Other Outputs
     "sourceMap": true,
     "declaration": true,

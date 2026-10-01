@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
-import { getHealthStatus, startHealthTracking } from "./health.service.js";
+import { getHealthStatus, startHealthTracking } from "./health.service.ts";
 
 const MIN_UPTIME = 0;
 

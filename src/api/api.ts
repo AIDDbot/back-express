@@ -1,6 +1,6 @@
 import { Router, type RequestHandler } from "express";
-import { getMe, postLogin, postRegister } from "./auth/auth.controller.js";
-import { getHealth } from "./health/health.controller.js";
+import { getMe, postLogin, postRegister } from "./auth/auth.controller.ts";
+import { getHealth } from "./health/health.controller.ts";
 
 export const createApiRouter = (requireSession: RequestHandler): Router => {
   const apiRouter = Router();

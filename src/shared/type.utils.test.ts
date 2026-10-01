@@ -14,7 +14,7 @@ import {
   safeParseFloat,
   safeParseInt,
   toFixedNumber,
-} from "./type.utils.js";
+} from "./type.utils.ts";
 
 describe("type.utils - value narrowing", () => {
   it("recognizes non-null records", () => {

@@ -1,6 +1,6 @@
 import { strict as assert } from "node:assert";
 import { describe, it } from "node:test";
-import { ApiError } from "./errors.js";
+import { ApiError } from "./errors.ts";
 
 void describe("ApiError", () => {
   void it("preserves the status and message while remaining an Error", () => {

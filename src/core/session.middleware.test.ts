@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { strict as assert } from "node:assert";
 import { describe, it } from "node:test";
-import { createSessionMiddleware } from "./session.middleware.js";
+import { createSessionMiddleware } from "./session.middleware.ts";
 
 interface MiddlewareOutcome {
   error?: unknown;

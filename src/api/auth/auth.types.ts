@@ -1,4 +1,4 @@
-import { isRecord } from "../../shared/type.utils.js";
+import { isRecord } from "../../shared/type.utils.ts";
 
 export type UserRole = "user";
 

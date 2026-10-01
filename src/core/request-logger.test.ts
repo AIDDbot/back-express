@@ -2,8 +2,8 @@ import express from "express";
 import { strict as assert } from "node:assert";
 import type { AddressInfo } from "node:net";
 import { describe, it } from "node:test";
-import type { Logger } from "../shared/logger.js";
-import { requestLogger } from "./request-logger.js";
+import type { Logger } from "../shared/logger.ts";
+import { requestLogger } from "./request-logger.ts";
 
 interface Entry {
   level: string;

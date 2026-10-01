@@ -2,8 +2,8 @@ import { strict as assert } from "node:assert";
 import type { Express } from "express";
 import { mock, it } from "node:test";
 import { setTimeout as wait } from "node:timers/promises";
-import { API_BASE_PATH } from "../shared/config.js";
-import { listen, type ListenerRuntime } from "./listener.js";
+import { API_BASE_PATH } from "../shared/config.ts";
+import { listen, type ListenerRuntime } from "./listener.ts";
 
 interface Fixture {
   calls: unknown[][];

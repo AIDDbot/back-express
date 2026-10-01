@@ -3,9 +3,9 @@ import { strict as assert } from "node:assert";
 import { mkdirSync } from "node:fs";
 import type { AddressInfo } from "node:net";
 import { afterEach, describe, it, mock } from "node:test";
-import { ApiError } from "../shared/errors.js";
-import { createLogger, type Logger } from "../shared/logger.js";
-import { errorHandler } from "./error-handler.js";
+import { ApiError } from "../shared/errors.ts";
+import { createLogger, type Logger } from "../shared/logger.ts";
+import { errorHandler } from "./error-handler.ts";
 
 interface ErrorResponse {
   body?: unknown;

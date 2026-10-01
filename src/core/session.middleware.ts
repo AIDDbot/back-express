@@ -1,5 +1,5 @@
 import type { NextFunction, Request, RequestHandler, Response } from "express";
-import { ApiError } from "../shared/errors.js";
+import { ApiError } from "../shared/errors.ts";
 
 const BEARER_PATTERN = /^Bearer\s+(?<token>\S+)$/iu;
 const SESSION_USER_KEY = "sessionUser";

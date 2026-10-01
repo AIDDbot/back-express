@@ -1,5 +1,5 @@
 import type { NextFunction, Request, RequestHandler, Response } from "express";
-import { createLogger, type LogLevel, type Logger } from "../shared/logger.js";
+import { createLogger, type LogLevel, type Logger } from "../shared/logger.ts";
 
 const CLIENT_ERROR_MIN = 400;
 const SERVER_ERROR_MIN = 500;

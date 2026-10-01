@@ -1,7 +1,7 @@
 import { strict as assert } from "node:assert";
 import { describe, it } from "node:test";
-import { DB_BUSY_TIMEOUT_MS } from "./config.js";
-import { getDb } from "./db.js";
+import { DB_BUSY_TIMEOUT_MS } from "./config.ts";
+import { getDb } from "./db.ts";
 
 void describe("getDb", () => {
   void it("returns one shared connection and applies SQLite pragmas", () => {

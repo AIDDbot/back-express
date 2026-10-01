@@ -1,5 +1,5 @@
 import type { Response } from "express";
-import { isPublicUser, type User } from "./auth.types.js";
+import { isPublicUser, type User } from "./auth.types.ts";
 
 declare global {
   namespace Express {

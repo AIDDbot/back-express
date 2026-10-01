@@ -1,6 +1,6 @@
-import { ApiError } from "../../shared/errors.js";
-import { isNonEmptyString, isRecord } from "../../shared/type.utils.js";
-import { createLogger } from "../../shared/logger.js";
+import { ApiError } from "../../shared/errors.ts";
+import { isNonEmptyString, isRecord } from "../../shared/type.utils.ts";
+import { createLogger } from "../../shared/logger.ts";
 import {
   DuplicateEmailError,
   findUserByEmail,
@@ -10,14 +10,14 @@ import {
   insertUser,
   type InsertUserParams,
   type UserRecord,
-} from "./auth.repository.js";
+} from "./auth.repository.ts";
 import {
   isUserRole,
   type LoginRequest,
   type RegisterRequest,
   type Session,
   type User,
-} from "./auth.types.js";
+} from "./auth.types.ts";
 
 const INVALID_CREDENTIALS = "Invalid credentials";
 const INVALID_SESSION = "Invalid session";

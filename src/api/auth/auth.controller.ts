@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
-import { getSessionUser } from "./auth.session.js";
-import { loginUser, registerUser } from "./auth.service.js";
+import { getSessionUser } from "./auth.session.ts";
+import { loginUser, registerUser } from "./auth.service.ts";
 
 const CREATED = 201;
 

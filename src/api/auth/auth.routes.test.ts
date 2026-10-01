@@ -3,11 +3,11 @@ import { strict as assert } from "node:assert";
 import type { Server } from "node:http";
 import type { AddressInfo } from "node:net";
 import { after, before, describe, it } from "node:test";
-import { errorHandler } from "../../core/error-handler.js";
-import { createSessionMiddleware } from "../../core/session.middleware.js";
-import { createApiRouter } from "../api.js";
-import { findSessionUser, startAuthTracking } from "./auth.service.js";
-import type { User } from "./auth.types.js";
+import { errorHandler } from "../../core/error-handler.ts";
+import { createSessionMiddleware } from "../../core/session.middleware.ts";
+import { createApiRouter } from "../api.ts";
+import { findSessionUser, startAuthTracking } from "./auth.service.ts";
+import type { User } from "./auth.types.ts";
 
 const UNAUTHORIZED = 401;
 const OK = 200;

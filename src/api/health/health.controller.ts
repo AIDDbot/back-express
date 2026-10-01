@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { getHealthStatus } from "./health.service.js";
+import { getHealthStatus } from "./health.service.ts";
 
 export const getHealth = (_req: Readonly<Request>, res: Readonly<Response>): void => {
   const healthStatus = getHealthStatus();

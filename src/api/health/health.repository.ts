@@ -1,5 +1,5 @@
-import { getDb } from "../../shared/db.js";
-import { coerceToFiniteNumber } from "../../shared/type.utils.js";
+import { getDb } from "../../shared/db.ts";
+import { coerceToFiniteNumber } from "../../shared/type.utils.ts";
 
 export const initHealthRepository = (): void => {
   getDb().exec(`

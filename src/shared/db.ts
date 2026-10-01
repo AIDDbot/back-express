@@ -1,8 +1,8 @@
 import { existsSync, mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 import { DatabaseSync } from "node:sqlite";
-import { DB_BUSY_TIMEOUT_MS, DB_PATH } from "./config.js";
-import { createLogger, type Logger } from "./logger.js";
+import { DB_BUSY_TIMEOUT_MS, DB_PATH } from "./config.ts";
+import { createLogger, type Logger } from "./logger.ts";
 
 const databaseConnectionCache: { current?: DatabaseSync } = {};
 

@@ -1,7 +1,7 @@
 import assert from "node:assert";
 import { afterEach, describe, it, mock } from "node:test";
-import { findUserByEmail } from "./auth.repository.js";
-import { loginUser, registerUser, startAuthTracking, toPublicUser } from "./auth.service.js";
+import { findUserByEmail } from "./auth.repository.ts";
+import { loginUser, registerUser, startAuthTracking, toPublicUser } from "./auth.service.ts";
 
 interface WithStatus {
   status?: number;

@@ -1,8 +1,8 @@
 import { appendFileSync, mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { LOG_DIR, LOG_LEVEL, LOG_LEVELS, type LogLevel } from "./config.js";
+import { LOG_DIR, LOG_LEVEL, LOG_LEVELS, type LogLevel } from "./config.ts";
 
-export type { LogLevel } from "./config.js";
+export type { LogLevel } from "./config.ts";
 
 export interface Logger {
   debug: (message: string) => void;

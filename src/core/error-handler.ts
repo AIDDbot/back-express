@@ -1,7 +1,7 @@
 import type { ErrorRequestHandler, NextFunction, Request, Response } from "express";
-import { ApiError } from "../shared/errors.js";
-import { createLogger, type Logger } from "../shared/logger.js";
-import { coerceToFiniteNumber, isRecord } from "../shared/type.utils.js";
+import { ApiError } from "../shared/errors.ts";
+import { createLogger, type Logger } from "../shared/logger.ts";
+import { coerceToFiniteNumber, isRecord } from "../shared/type.utils.ts";
 
 /** The fields Express and http-errors put on a thrown error, narrowed at runtime. */
 interface HttpError {

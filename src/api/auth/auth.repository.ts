@@ -1,6 +1,6 @@
 import type { StatementResultingChanges } from "node:sqlite";
-import { getDb } from "../../shared/db.js";
-import { isRecord } from "../../shared/type.utils.js";
+import { getDb } from "../../shared/db.ts";
+import { isRecord } from "../../shared/type.utils.ts";
 
 /** Internal row shape; includes the password hash, never exposed on the wire. */
 export interface UserRecord {
